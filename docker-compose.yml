@@ -1,0 +1,35 @@
+version: "3.9"
+services:
+  tcc-uniftec-5s:
+      build:
+        dockerfile: ./Dockerfile
+      container_name: tcc-uniftec-5s
+      ports:
+      - "8888:8888"
+      env_file:
+        - .env.compose
+      depends_on:
+        - postgres
+      networks:
+        app-network:
+          aliases:
+            - "tcc-uniftec-5s.private"
+
+  postgres:
+    image: postgres:12.3-alpine
+    container_name: tcc-uniftec-5s-postgres
+    hostname: postgres
+    ports:
+      - "0.0.0.0:5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=sample
+    networks:
+      app-network:
+        aliases:
+          - "postgres.private"
+
+networks:
+  app-network:
+
