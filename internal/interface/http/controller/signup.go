@@ -3,6 +3,7 @@ package controller
 import (
 	"net/http"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
 	usecase "github.com/tcc-uniftec-5s/internal/app/use_case"
@@ -52,7 +53,18 @@ func (sc signupController) Signup() func(c echo.Context) error {
 			return c.JSON(status, prob)
 		}
 
-		// todo adicionar validacao de payload
+		validate := validator.New()
+		if err := validate.Struct(signupReq); err != nil {
+			log.Error().Interface("signup request", signupReq).Msg("/signup validation error")
+			status := http.StatusBadRequest
+			prob := problem.New(
+				problem.Title("REQUEST_VALIDATION_ERROR"),
+				problem.Detail("Bad Request"),
+				problem.Status(status),
+			)
+
+			return c.JSON(status, prob)
+		}
 
 		err := sc.signupUseCase.Signup(c.Request().Context(), signupReq.Email, signupReq.Password, signupReq.Name)
 		if err != nil {
