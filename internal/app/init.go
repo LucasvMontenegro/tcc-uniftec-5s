@@ -6,12 +6,13 @@ import (
 
 	"github.com/rs/zerolog/log"
 	"github.com/tcc-uniftec-5s/internal/app/service"
-	"github.com/tcc-uniftec-5s/internal/infra/constants"
+	usecase "github.com/tcc-uniftec-5s/internal/app/use_case"
 	"github.com/tcc-uniftec-5s/internal/infra/database"
 	"github.com/tcc-uniftec-5s/internal/infra/database/repository"
 	"github.com/tcc-uniftec-5s/internal/infra/environment"
 	logConfig "github.com/tcc-uniftec-5s/internal/infra/log"
-	api "github.com/tcc-uniftec-5s/internal/interface/http"
+	server "github.com/tcc-uniftec-5s/internal/interface/http"
+	"github.com/tcc-uniftec-5s/internal/interface/http/controller"
 )
 
 type TracerLogger struct {
@@ -43,13 +44,35 @@ func Init(rootdir string) {
 		log.Fatal().Stack().Err(err).Msg("fail to migrate database")
 	}
 
-	sampleRepository := repository.NewSampleRepository(pgService)
-	sampleService := service.NewSampleService(sampleRepository)
-	apiService := api.NewService(fmt.Sprintf(":%s", environment.Env.HttpPort), constants.ServiceName, sampleService)
+	txHandler := repository.NewTxHandler(pgService)
+	credentialRepository := repository.NewCredentialRepository(pgService)
+	accountRepository := repository.NewAccountRepository(pgService)
+	userRepository := repository.NewUserRepository(pgService)
+	credentialFactory := service.NewCredentialFactory(credentialRepository)
+	accountFactory := service.NewAccountFactory(accountRepository)
+	userFactory := service.NewUserFactory(userRepository)
+
+	signupUseCase := usecase.NewSignup(txHandler, credentialFactory, accountFactory, userFactory)
+	httpServer := server.New(
+		fmt.Sprintf(":%s", "3000"),
+		"tcc-uniftec-5s",
+	)
+
+	controllers := []controller.HTTPController{
+		controller.NewSignupController(httpServer.Instance, signupUseCase),
+	}
+
+	registerControllersRoutes(controllers)
 
 	go func() {
-		if err := apiService.StartServer(); err != nil {
+		if err := httpServer.Start(); err != nil {
 			log.Fatal().Stack().Err(err).Msg("fail to start http server")
 		}
 	}()
+}
+
+func registerControllersRoutes(controllers []controller.HTTPController) {
+	for _, c := range controllers {
+		c.RegisterRoutes()
+	}
 }
