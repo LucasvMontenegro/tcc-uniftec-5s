@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	account_aggregate "github.com/tcc-uniftec-5s/internal/domain/accountAggregate"
+	"github.com/tcc-uniftec-5s/internal/domain/entity"
 	"github.com/tcc-uniftec-5s/internal/infra/database/datastructure"
 	"gopkg.in/guregu/null.v4"
 	"gorm.io/gorm"
@@ -13,13 +13,13 @@ type accountRepository struct {
 	db *gorm.DB
 }
 
-func NewAccountRepository(db *gorm.DB) account_aggregate.AccountRepository {
+func NewAccountRepository(db *gorm.DB) entity.AccountRepository {
 	return &accountRepository{
 		db: db,
 	}
 }
 
-func (r accountRepository) Save(ctx context.Context, account *account_aggregate.AccountEntity) error {
+func (r accountRepository) Save(ctx context.Context, account *entity.AccountEntity) error {
 	dbconn := r.db
 	ctxValue, ok := ctx.Value(CtxKey{}).(CtxValue)
 	if ok {
@@ -42,7 +42,7 @@ func (r accountRepository) Save(ctx context.Context, account *account_aggregate.
 	return err
 }
 
-func (r accountRepository) Update(ctx context.Context, account *account_aggregate.AccountEntity) error {
+func (r accountRepository) Update(ctx context.Context, account *entity.AccountEntity) error {
 	dbconn := r.db
 	ctxValue, ok := ctx.Value(CtxKey{}).(CtxValue)
 	if ok {

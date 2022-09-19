@@ -1,4 +1,4 @@
-package account_aggregate
+package entity
 
 import "context"
 
@@ -14,6 +14,10 @@ type UserEntity struct {
 	IsAdmin bool
 	Status  UserEnum
 	Team    string /*TeamEntity*/
+}
+
+type UserFactoryInterface interface {
+	NewUser(account *AccountEntity, name string) UserInterface
 }
 
 type UserInterface interface {

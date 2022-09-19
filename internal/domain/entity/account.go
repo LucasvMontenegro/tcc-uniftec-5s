@@ -1,4 +1,4 @@
-package account_aggregate
+package entity
 
 import "context"
 
@@ -18,4 +18,8 @@ type AccountInterface interface {
 type AccountRepository interface {
 	Save(ctx context.Context, account *AccountEntity) error
 	Update(ctx context.Context, account *AccountEntity) error
+}
+
+type AccountFactoryInterface interface {
+	NewAccount(credential *CredentialEntity) AccountInterface
 }

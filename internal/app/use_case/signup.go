@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/rs/zerolog/log"
-	"github.com/tcc-uniftec-5s/internal/app/service"
-	"github.com/tcc-uniftec-5s/internal/infra/database/repository"
+	"github.com/tcc-uniftec-5s/internal/app/repository"
+	"github.com/tcc-uniftec-5s/internal/domain/entity"
 )
 
 type Signup interface {
@@ -14,9 +14,9 @@ type Signup interface {
 
 func NewSignup(
 	txHandler repository.TxHandlerInterface,
-	credentialFactory service.CredentialFactoryInterface,
-	accountFactory service.AccountFactoryInterface,
-	userFactory service.UserFactoryInterface) Signup {
+	credentialFactory entity.CredentialFactoryInterface,
+	accountFactory entity.AccountFactoryInterface,
+	userFactory entity.UserFactoryInterface) Signup {
 
 	return signup{
 		txHandler:         txHandler,
@@ -28,9 +28,9 @@ func NewSignup(
 
 type signup struct {
 	txHandler         repository.TxHandlerInterface
-	credentialFactory service.CredentialFactoryInterface
-	accountFactory    service.AccountFactoryInterface
-	userFactory       service.UserFactoryInterface
+	credentialFactory entity.CredentialFactoryInterface
+	accountFactory    entity.AccountFactoryInterface
+	userFactory       entity.UserFactoryInterface
 }
 
 func (uc signup) Signup(ctx context.Context, email, password, name string) error {

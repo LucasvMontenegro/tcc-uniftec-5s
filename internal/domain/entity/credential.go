@@ -1,4 +1,4 @@
-package account_aggregate
+package entity
 
 import (
 	"context"
@@ -16,7 +16,7 @@ type CredentialInterface interface {
 	Self(ctx context.Context) *CredentialEntity
 	Signup(ctx context.Context) error
 	AddAccount(ctx context.Context, account *AccountEntity) error
-	// Identify(ctx context.Context) (string /*JWT*/, error)
+	Identify(ctx context.Context) (err error)
 	// Logout(ctx context.Context) error
 	// UpdatePassword(ctx context.Context, password string) error
 	// GetAccountID(ctx context.Context) (id int, err error)
@@ -25,5 +25,9 @@ type CredentialInterface interface {
 type CredentialRepository interface {
 	Save(ctx context.Context, credential *CredentialEntity) error
 	Update(ctx context.Context, credential *CredentialEntity) error
-	// Identify(ctx context.Context, credential *datastructure.Credential) (*datastructure.Credential, error)
+	Identify(ctx context.Context, credential *CredentialEntity) error
+}
+
+type CredentialFactoryInterface interface {
+	NewCredential(email, password string) CredentialInterface
 }
