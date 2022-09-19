@@ -1,25 +1,19 @@
 package service
 
-import (
-	account_aggregate "github.com/tcc-uniftec-5s/internal/domain/accountAggregate"
-)
+import "github.com/tcc-uniftec-5s/internal/domain/entity"
 
-type AccountFactory struct {
-	accountRepository account_aggregate.AccountRepository
+type accountFactory struct {
+	accountRepository entity.AccountRepository
 }
 
-type AccountFactoryInterface interface {
-	NewAccount(credential *account_aggregate.CredentialEntity) account_aggregate.AccountInterface
-}
-
-func NewAccountFactory(accountRepository account_aggregate.AccountRepository) AccountFactoryInterface {
-	return AccountFactory{
+func NewAccountFactory(accountRepository entity.AccountRepository) entity.AccountFactoryInterface {
+	return accountFactory{
 		accountRepository: accountRepository,
 	}
 }
 
-func (f AccountFactory) NewAccount(credential *account_aggregate.CredentialEntity) account_aggregate.AccountInterface {
-	account := account_aggregate.AccountEntity{
+func (f accountFactory) NewAccount(credential *entity.CredentialEntity) entity.AccountInterface {
+	account := entity.AccountEntity{
 		Credential: credential,
 	}
 

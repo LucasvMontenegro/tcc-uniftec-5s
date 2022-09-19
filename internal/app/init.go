@@ -5,10 +5,10 @@ import (
 	"path/filepath"
 
 	"github.com/rs/zerolog/log"
+	"github.com/tcc-uniftec-5s/internal/app/repository"
 	"github.com/tcc-uniftec-5s/internal/app/service"
 	usecase "github.com/tcc-uniftec-5s/internal/app/use_case"
 	"github.com/tcc-uniftec-5s/internal/infra/database"
-	"github.com/tcc-uniftec-5s/internal/infra/database/repository"
 	"github.com/tcc-uniftec-5s/internal/infra/environment"
 	logConfig "github.com/tcc-uniftec-5s/internal/infra/log"
 	server "github.com/tcc-uniftec-5s/internal/interface/http"
@@ -38,7 +38,7 @@ func Init(rootdir string) {
 		log.Fatal().Stack().Err(err).Msg("fail to start postgres connection")
 	}
 
-	migrationsPath := "file://" + filepath.Join(rootdir, "internal/infra/database/migrations")
+	migrationsPath := "file://" + filepath.Join(rootdir, "internal/infra/database/migration")
 	err = database.MigrateUp(pgService, environment.Env.DbName, migrationsPath)
 	if err != nil {
 		log.Fatal().Stack().Err(err).Msg("fail to migrate database")

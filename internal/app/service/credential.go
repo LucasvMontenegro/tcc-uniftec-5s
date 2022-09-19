@@ -4,15 +4,15 @@ import (
 	"context"
 
 	"github.com/rs/zerolog/log"
-	account_aggregate "github.com/tcc-uniftec-5s/internal/domain/accountAggregate"
+	"github.com/tcc-uniftec-5s/internal/domain/entity"
 )
 
 type CredentialImpl struct {
-	CredentialEntity     *account_aggregate.CredentialEntity
-	CredentialRepository account_aggregate.CredentialRepository
+	CredentialEntity     *entity.CredentialEntity
+	CredentialRepository entity.CredentialRepository
 }
 
-func (s CredentialImpl) Self(ctx context.Context) *account_aggregate.CredentialEntity {
+func (s CredentialImpl) Self(ctx context.Context) *entity.CredentialEntity {
 	return s.CredentialEntity
 }
 
@@ -27,7 +27,7 @@ func (s CredentialImpl) Signup(ctx context.Context) error {
 	return nil
 }
 
-func (s CredentialImpl) AddAccount(ctx context.Context, account *account_aggregate.AccountEntity) error {
+func (s CredentialImpl) AddAccount(ctx context.Context, account *entity.AccountEntity) error {
 	log.Info().Msg("adding account to credential")
 
 	s.CredentialEntity.Account = account
@@ -38,4 +38,21 @@ func (s CredentialImpl) AddAccount(ctx context.Context, account *account_aggrega
 	}
 
 	return nil
+}
+
+func (s CredentialImpl) Identify(ctx context.Context) error {
+	log.Info().Msg("identifying credential")
+	if err := s.CredentialRepository.Identify(ctx, s.CredentialEntity); err != nil {
+		// IF NOT FOUND log.Info().Msg("credential not found")
+		log.Info().Msg("error identifying credential")
+		return nil
+	}
+
+	s.generateJWT(ctx)
+	return nil
+}
+
+func (s CredentialImpl) generateJWT(ctx context.Context) {
+	log.Info().Msg("generating JWT")
+	s.CredentialEntity.JWT = "JWT"
 }
