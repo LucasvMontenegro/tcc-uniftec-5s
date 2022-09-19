@@ -48,9 +48,11 @@ func Init(rootdir string) {
 	credentialRepository := repository.NewCredentialRepository(pgService)
 	accountRepository := repository.NewAccountRepository(pgService)
 	userRepository := repository.NewUserRepository(pgService)
+	sessionRepository := repository.NewSessionRepository(pgService)
 	credentialFactory := service.NewCredentialFactory(credentialRepository)
 	accountFactory := service.NewAccountFactory(accountRepository)
 	userFactory := service.NewUserFactory(userRepository)
+	sessionFactory := service.NewSessionFactory(sessionRepository)
 
 	signupUseCase := usecase.NewSignup(txHandler, credentialFactory, accountFactory, userFactory)
 	httpServer := server.New(
@@ -58,8 +60,11 @@ func Init(rootdir string) {
 		"tcc-uniftec-5s",
 	)
 
+	loginUseCase := usecase.NewLogin(txHandler, credentialFactory, sessionFactory)
+
 	controllers := []controller.HTTPController{
 		controller.NewSignupController(httpServer.Instance, signupUseCase),
+		controller.NewLoginController(httpServer.Instance, loginUseCase),
 	}
 
 	registerControllersRoutes(controllers)
