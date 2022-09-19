@@ -13,9 +13,11 @@ func NewCredentialFactory(credentialRepository entity.CredentialRepository) enti
 }
 
 func (f credentialFactory) NewCredential(email, password string) entity.CredentialInterface {
+	account := entity.AccountEntity{}
 	credential := entity.CredentialEntity{
 		Email:    email,
 		Password: password,
+		Account:  &account,
 	}
 
 	return CredentialImpl{

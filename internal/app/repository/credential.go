@@ -82,10 +82,13 @@ func (r credentialRepository) Identify(ctx context.Context, credential *entity.C
 		WithContext(ctx).
 		Table("credentials").
 		Where("email = ? and password = ?", credential.Email, credential.Password).
-		Find(&credentialDS).
+		First(&credentialDS).
 		Error
 
-	credential.ID = &credentialDS.ID.Int64
-	credential.Account.ID = &credentialDS.AccountId.Int64
+	if err == nil {
+		credential.ID = &credentialDS.ID.Int64
+		credential.Account.ID = &credentialDS.AccountId.Int64
+	}
+
 	return err
 }
