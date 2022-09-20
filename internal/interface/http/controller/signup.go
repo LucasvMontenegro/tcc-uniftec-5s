@@ -22,7 +22,7 @@ func NewSignupController(
 }
 
 type SignupController interface {
-	HTTPController
+	Router
 	Signup() func(c echo.Context) error
 }
 

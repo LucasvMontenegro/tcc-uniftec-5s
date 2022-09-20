@@ -1,5 +1,5 @@
 package controller
 
-type HTTPController interface {
+type Router interface {
 	RegisterRoutes()
 }

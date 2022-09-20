@@ -55,16 +55,18 @@ func Init(rootdir string) {
 	sessionFactory := service.NewSessionFactory(sessionRepository)
 
 	signupUseCase := usecase.NewSignup(txHandler, credentialFactory, accountFactory, userFactory)
+	loginUseCase := usecase.NewLogin(txHandler, credentialFactory, sessionFactory)
+	resetPasswordUseCase := usecase.NewResetPassword(txHandler, credentialFactory)
+
 	httpServer := server.New(
 		fmt.Sprintf(":%s", "3000"),
 		"tcc-uniftec-5s",
 	)
 
-	loginUseCase := usecase.NewLogin(txHandler, credentialFactory, sessionFactory)
-
-	controllers := []controller.HTTPController{
+	controllers := []controller.Router{
 		controller.NewSignupController(httpServer.Instance, signupUseCase),
 		controller.NewLoginController(httpServer.Instance, loginUseCase),
+		controller.NewResetPasswordController(httpServer.Instance, resetPasswordUseCase),
 	}
 
 	registerControllersRoutes(controllers)
@@ -76,7 +78,7 @@ func Init(rootdir string) {
 	}()
 }
 
-func registerControllersRoutes(controllers []controller.HTTPController) {
+func registerControllersRoutes(controllers []controller.Router) {
 	for _, c := range controllers {
 		c.RegisterRoutes()
 	}
