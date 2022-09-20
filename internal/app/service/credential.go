@@ -45,7 +45,7 @@ func (s CredentialImpl) Identify(ctx context.Context) error {
 	if err := s.CredentialRepository.Identify(ctx, s.CredentialEntity); err != nil {
 		// IF NOT FOUND log.Info().Msg("credential not found")
 		log.Info().Msg("error identifying credential")
-		return nil
+		return err
 	}
 
 	s.generateJWT(ctx)
@@ -55,4 +55,18 @@ func (s CredentialImpl) Identify(ctx context.Context) error {
 func (s CredentialImpl) generateJWT(ctx context.Context) {
 	log.Info().Msg("generating JWT")
 	s.CredentialEntity.JWT = "JWT"
+}
+
+func (s CredentialImpl) UpdatePassword(ctx context.Context, password string) error {
+	log.Info().Msg("updating credential password")
+
+	s.CredentialEntity.Password = password
+
+	if err := s.CredentialRepository.UpdatePassword(ctx, s.CredentialEntity); err != nil {
+		// IF NOT FOUND log.Info().Msg("credential not found")
+		log.Info().Msg("error updating credential password")
+		return nil
+	}
+
+	return nil
 }
