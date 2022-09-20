@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"time"
 
 	"github.com/tcc-uniftec-5s/internal/domain/entity"
 	"github.com/tcc-uniftec-5s/internal/infra/database/datastructure"
@@ -30,6 +31,7 @@ func (r accountRepository) Save(ctx context.Context, account *entity.AccountEnti
 		ID:           null.IntFromPtr(account.ID),
 		CredentialID: null.IntFromPtr(account.Credential.ID),
 		Email:        account.Credential.Email,
+		CreatedAt:    time.Now(),
 	}
 
 	err := dbconn.
