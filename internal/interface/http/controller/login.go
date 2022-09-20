@@ -14,30 +14,30 @@ import (
 
 func NewLoginController(
 	instance *echo.Echo,
-	loginUseCase usecase.Login) LoginController {
+	loginUseCase usecase.Login) Login {
 
-	return &loginController{
+	return &login{
 		Instance:     instance,
 		loginUseCase: loginUseCase,
 	}
 }
 
-type LoginController interface {
-	HTTPController
+type Login interface {
+	Router
 	Login() func(c echo.Context) error
 }
 
-type loginController struct {
+type login struct {
 	Instance      *echo.Echo
 	signupUseCase usecase.Signup
 	loginUseCase  usecase.Login
 }
 
-func (c loginController) RegisterRoutes() {
+func (c login) RegisterRoutes() {
 	c.Instance.POST("/login", c.Login())
 }
 
-func (lc loginController) Login() func(c echo.Context) error {
+func (lc login) Login() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		log.Info().Msg("/login")
 
