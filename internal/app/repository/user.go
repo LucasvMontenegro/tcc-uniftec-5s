@@ -5,7 +5,6 @@ import (
 
 	"github.com/tcc-uniftec-5s/internal/domain/entity"
 	"github.com/tcc-uniftec-5s/internal/infra/database/datastructure"
-	"gopkg.in/guregu/null.v4"
 	"gorm.io/gorm"
 )
 
@@ -26,11 +25,12 @@ func (r userRepository) Save(ctx context.Context, user *entity.User) error {
 		dbconn = ctxValue.tx
 	}
 
+	status := string(user.Status)
 	userDS := datastructure.User{
-		AccountID: null.IntFromPtr(user.Account.ID),
-		Name:      user.Name,
-		Status:    string(user.Status),
-		IsAdmin:   user.IsAdmin,
+		AccountID: user.Account.ID,
+		Name:      &user.Name,
+		Status:    &status,
+		IsAdmin:   &user.IsAdmin,
 	}
 
 	err := dbconn.
@@ -39,6 +39,6 @@ func (r userRepository) Save(ctx context.Context, user *entity.User) error {
 		Create(&userDS).
 		Error
 
-	user.ID = &userDS.ID.Int64
+	user.ID = userDS.ID
 	return err
 }

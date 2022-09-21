@@ -17,7 +17,7 @@ type AccountInterface interface {
 
 type AccountRepository interface {
 	Save(ctx context.Context, account *Account) error
-	Update(ctx context.Context, account *Account) error
+	SetUser(ctx context.Context, account *Account) error
 }
 
 type AccountFactoryInterface interface {

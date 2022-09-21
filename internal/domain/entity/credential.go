@@ -24,7 +24,7 @@ type CredentialInterface interface {
 
 type CredentialRepository interface {
 	Save(ctx context.Context, credential *Credential) error
-	Update(ctx context.Context, credential *Credential) error
+	SetAccount(ctx context.Context, credential *Credential) error
 	Identify(ctx context.Context, credential *Credential) error
 	UpdatePassword(ctx context.Context, credential *Credential) error
 }

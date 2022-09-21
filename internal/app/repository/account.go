@@ -6,7 +6,6 @@ import (
 
 	"github.com/tcc-uniftec-5s/internal/domain/entity"
 	"github.com/tcc-uniftec-5s/internal/infra/database/datastructure"
-	"gopkg.in/guregu/null.v4"
 	"gorm.io/gorm"
 )
 
@@ -27,11 +26,12 @@ func (r accountRepository) Save(ctx context.Context, account *entity.Account) er
 		dbconn = ctxValue.tx
 	}
 
+	createdAt := time.Now()
 	accountDS := datastructure.Account{
-		ID:           null.IntFromPtr(account.ID),
-		CredentialID: null.IntFromPtr(account.Credential.ID),
-		Email:        account.Credential.Email,
-		CreatedAt:    time.Now(),
+		ID:           account.ID,
+		CredentialID: account.Credential.ID,
+		Email:        &account.Credential.Email,
+		CreatedAt:    &createdAt,
 	}
 
 	err := dbconn.
@@ -40,29 +40,31 @@ func (r accountRepository) Save(ctx context.Context, account *entity.Account) er
 		Create(&accountDS).
 		Error
 
-	account.ID = &accountDS.ID.Int64
+	account.ID = accountDS.ID
 	return err
 }
 
-func (r accountRepository) Update(ctx context.Context, account *entity.Account) error {
+func (r accountRepository) SetUser(ctx context.Context, account *entity.Account) error {
+	err := r.updates(ctx, account.ID, map[string]interface{}{
+		"user_id":    account.User.ID,
+		"updated_at": time.Now(),
+	})
+
+	return err
+}
+
+func (r accountRepository) updates(ctx context.Context, id interface{}, fields map[string]interface{}) error {
 	dbconn := r.db
 	ctxValue, ok := ctx.Value(CtxKey{}).(CtxValue)
 	if ok {
 		dbconn = ctxValue.tx
 	}
 
-	accountDS := datastructure.Account{
-		ID:           null.IntFromPtr(account.ID),
-		CredentialID: null.IntFromPtr(account.Credential.ID),
-		Email:        account.Credential.Email,
-		UserID:       null.IntFromPtr(account.User.ID),
-	}
-
 	err := dbconn.
 		WithContext(ctx).
 		Table("accounts").
-		Where("id = ?", account.ID).
-		Save(&accountDS).
+		Where("id = ?", id).
+		Updates(fields).
 		Error
 
 	return err

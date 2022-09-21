@@ -6,7 +6,6 @@ import (
 
 	"github.com/tcc-uniftec-5s/internal/domain/entity"
 	"github.com/tcc-uniftec-5s/internal/infra/database/datastructure"
-	"gopkg.in/guregu/null.v4"
 	"gorm.io/gorm"
 )
 
@@ -27,10 +26,11 @@ func (r credentialRepository) Save(ctx context.Context, credential *entity.Crede
 		dbconn = ctxValue.tx
 	}
 
+	createdAt := time.Now()
 	credentialDS := datastructure.Credential{
-		Email:     credential.Email,
-		Password:  credential.Password,
-		CreatedAt: time.Now(),
+		Email:     &credential.Email,
+		Password:  &credential.Password,
+		CreatedAt: &createdAt,
 	}
 
 	err := dbconn.
@@ -39,33 +39,16 @@ func (r credentialRepository) Save(ctx context.Context, credential *entity.Crede
 		Create(&credentialDS).
 		Error
 
-	credential.ID = &credentialDS.ID.Int64
+	credential.ID = credentialDS.ID
 	return err
 }
 
-func (r credentialRepository) Update(ctx context.Context, credential *entity.Credential) error {
-	dbconn := r.db
-	ctxValue, ok := ctx.Value(CtxKey{}).(CtxValue)
-	if ok {
-		dbconn = ctxValue.tx
-	}
+func (r credentialRepository) SetAccount(ctx context.Context, credential *entity.Credential) error {
+	err := r.updates(ctx, credential.ID, map[string]interface{}{
+		"account_id": credential.Account.ID,
+		"updated_at": time.Now(),
+	})
 
-	credentialDS := datastructure.Credential{
-		ID:        null.IntFromPtr(credential.ID),
-		AccountId: null.IntFromPtr(credential.Account.ID),
-		Email:     credential.Email,
-		Password:  credential.Password,
-		UpdatedAt: time.Now(),
-	}
-
-	err := dbconn.
-		WithContext(ctx).
-		Table("credentials").
-		Where("id = ?", credential.ID).
-		Save(&credentialDS).
-		Error
-
-	credential.Account.ID = &credentialDS.AccountId.Int64
 	return err
 }
 
@@ -77,8 +60,8 @@ func (r credentialRepository) Identify(ctx context.Context, credential *entity.C
 	}
 
 	credentialDS := datastructure.Credential{
-		Email:    credential.Email,
-		Password: credential.Password,
+		Email:    &credential.Email,
+		Password: &credential.Password,
 	}
 
 	err := dbconn.
@@ -89,8 +72,8 @@ func (r credentialRepository) Identify(ctx context.Context, credential *entity.C
 		Error
 
 	if err == nil {
-		credential.ID = &credentialDS.ID.Int64
-		credential.Account.ID = &credentialDS.AccountId.Int64
+		credential.ID = credentialDS.ID
+		credential.Account.ID = credentialDS.AccountId
 	}
 
 	return err
@@ -108,6 +91,23 @@ func (r credentialRepository) UpdatePassword(ctx context.Context, credential *en
 		Table("credentials").
 		Where("email = ?", credential.Email).
 		Updates(map[string]interface{}{"password": credential.Password, "updated_at": time.Now()}).
+		Error
+
+	return err
+}
+
+func (r credentialRepository) updates(ctx context.Context, id interface{}, fields map[string]interface{}) error {
+	dbconn := r.db
+	ctxValue, ok := ctx.Value(CtxKey{}).(CtxValue)
+	if ok {
+		dbconn = ctxValue.tx
+	}
+
+	err := dbconn.
+		WithContext(ctx).
+		Table("credentials").
+		Where("id = ?", id).
+		Updates(fields).
 		Error
 
 	return err

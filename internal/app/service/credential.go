@@ -32,7 +32,7 @@ func (s CredentialImpl) AddAccount(ctx context.Context, account *entity.Account)
 
 	s.CredentialEntity.Account = account
 
-	if err := s.CredentialRepository.Update(ctx, s.CredentialEntity); err != nil {
+	if err := s.CredentialRepository.SetAccount(ctx, s.CredentialEntity); err != nil {
 		log.Info().Msg("error saving credential")
 		return err
 	}
