@@ -6,7 +6,6 @@ import (
 
 	"github.com/tcc-uniftec-5s/internal/domain/entity"
 	"github.com/tcc-uniftec-5s/internal/infra/database/datastructure"
-	"gopkg.in/guregu/null.v4"
 	"gorm.io/gorm"
 )
 
@@ -32,10 +31,12 @@ func (r sessionRepository) SaveHistory(ctx context.Context, session *entity.Sess
 		dbconn = ctxValue.tx
 	}
 
+	createdAt := time.Now()
+	expiresAt := createdAt.Add(2 * time.Hour)
 	sessionHistDS := datastructure.SessionHistory{
-		AccountID: null.IntFromPtr(session.AccountEntity.ID),
-		CreatedAt: time.Now(),
-		ExpiresAt: time.Now().Add(2 * time.Hour),
+		AccountID: session.AccountEntity.ID,
+		CreatedAt: &createdAt,
+		ExpiresAt: &expiresAt,
 	}
 
 	err := dbconn.

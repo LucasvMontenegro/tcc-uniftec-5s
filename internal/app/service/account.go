@@ -32,7 +32,7 @@ func (s AccountImpl) AddUser(ctx context.Context, user *entity.User) error {
 
 	s.accountEntity.User = user
 
-	if err := s.accountRepository.Update(ctx, s.Self(ctx)); err != nil {
+	if err := s.accountRepository.SetUser(ctx, s.Self(ctx)); err != nil {
 		log.Info().Msg("error updating account")
 		return err
 	}
