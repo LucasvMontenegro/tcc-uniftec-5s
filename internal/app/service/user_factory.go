@@ -12,8 +12,8 @@ func NewUserFactory(userRepository entity.UserRepository) entity.UserFactoryInte
 	}
 }
 
-func (f UserFactory) NewUser(account *entity.AccountEntity, name string) entity.UserInterface {
-	user := entity.UserEntity{
+func (f UserFactory) NewUser(account *entity.Account, name string) entity.UserInterface {
+	user := entity.User{
 		Account: account,
 		Name:    name,
 		Status:  "ACTIVE",

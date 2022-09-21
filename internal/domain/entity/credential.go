@@ -4,18 +4,18 @@ import (
 	"context"
 )
 
-type CredentialEntity struct {
+type Credential struct {
 	ID       *int64
 	JWT      string
 	Email    string
-	Account  *AccountEntity
+	Account  *Account
 	Password string
 }
 
 type CredentialInterface interface {
-	Self(ctx context.Context) *CredentialEntity
+	Self(ctx context.Context) *Credential
 	Signup(ctx context.Context) error
-	AddAccount(ctx context.Context, account *AccountEntity) error
+	AddAccount(ctx context.Context, account *Account) error
 	Identify(ctx context.Context) (err error)
 	UpdatePassword(ctx context.Context, password string) error
 	// Logout(ctx context.Context) error
@@ -23,10 +23,10 @@ type CredentialInterface interface {
 }
 
 type CredentialRepository interface {
-	Save(ctx context.Context, credential *CredentialEntity) error
-	Update(ctx context.Context, credential *CredentialEntity) error
-	Identify(ctx context.Context, credential *CredentialEntity) error
-	UpdatePassword(ctx context.Context, credential *CredentialEntity) error
+	Save(ctx context.Context, credential *Credential) error
+	Update(ctx context.Context, credential *Credential) error
+	Identify(ctx context.Context, credential *Credential) error
+	UpdatePassword(ctx context.Context, credential *Credential) error
 }
 
 type CredentialFactoryInterface interface {

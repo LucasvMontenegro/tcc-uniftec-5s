@@ -8,15 +8,15 @@ import (
 )
 
 type AccountImpl struct {
-	accountEntity     *entity.AccountEntity
+	accountEntity     *entity.Account
 	accountRepository entity.AccountRepository
 }
 
-func (s AccountImpl) Self(ctx context.Context) *entity.AccountEntity {
+func (s AccountImpl) Self(ctx context.Context) *entity.Account {
 	return s.accountEntity
 }
 
-func (s AccountImpl) Create(ctx context.Context) (*entity.AccountEntity, error) {
+func (s AccountImpl) Create(ctx context.Context) (*entity.Account, error) {
 	log.Info().Msg("creating account")
 
 	if err := s.accountRepository.Save(ctx, s.Self(ctx)); err != nil {
@@ -27,7 +27,7 @@ func (s AccountImpl) Create(ctx context.Context) (*entity.AccountEntity, error) 
 	return s.Self(ctx), nil
 }
 
-func (s AccountImpl) AddUser(ctx context.Context, user *entity.UserEntity) error {
+func (s AccountImpl) AddUser(ctx context.Context, user *entity.User) error {
 	log.Info().Msg("adding user to account")
 
 	s.accountEntity.User = user

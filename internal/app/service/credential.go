@@ -8,11 +8,11 @@ import (
 )
 
 type CredentialImpl struct {
-	CredentialEntity     *entity.CredentialEntity
+	CredentialEntity     *entity.Credential
 	CredentialRepository entity.CredentialRepository
 }
 
-func (s CredentialImpl) Self(ctx context.Context) *entity.CredentialEntity {
+func (s CredentialImpl) Self(ctx context.Context) *entity.Credential {
 	return s.CredentialEntity
 }
 
@@ -27,7 +27,7 @@ func (s CredentialImpl) Signup(ctx context.Context) error {
 	return nil
 }
 
-func (s CredentialImpl) AddAccount(ctx context.Context, account *entity.AccountEntity) error {
+func (s CredentialImpl) AddAccount(ctx context.Context, account *entity.Account) error {
 	log.Info().Msg("adding account to credential")
 
 	s.CredentialEntity.Account = account

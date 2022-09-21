@@ -8,11 +8,11 @@ import (
 )
 
 type SessionImpl struct {
-	sessionEntity     *entity.SessionEntity
+	sessionEntity     *entity.Session
 	sessionRepository entity.SessionRepository
 }
 
-func (s SessionImpl) Self(ctx context.Context) *entity.SessionEntity {
+func (s SessionImpl) Self(ctx context.Context) *entity.Session {
 	return s.sessionEntity
 }
 

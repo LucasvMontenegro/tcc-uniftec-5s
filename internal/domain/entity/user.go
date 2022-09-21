@@ -2,33 +2,33 @@ package entity
 
 import "context"
 
-type UserEnum string
+type UserStatusEnum string
 
-const UserActive UserEnum = "ACTIVE"
-const UserInactive UserEnum = "INACTIVE"
+const UserActive UserStatusEnum = "ACTIVE"
+const UserInactive UserStatusEnum = "INACTIVE"
 
-type UserEntity struct {
+type User struct {
 	ID      *int64
-	Account *AccountEntity
+	Account *Account
 	Name    string
 	IsAdmin bool
-	Status  UserEnum
+	Status  UserStatusEnum
 	Team    string /*TeamEntity*/
 }
 
 type UserFactoryInterface interface {
-	NewUser(account *AccountEntity, name string) UserInterface
+	NewUser(account *Account, name string) UserInterface
 }
 
 type UserInterface interface {
-	Self(ctx context.Context) *UserEntity
-	Create(ctx context.Context) (*UserEntity, error)
+	Self(ctx context.Context) *User
+	Create(ctx context.Context) (*User, error)
 	// UpdateName(ctx context.Context) error
 	// Activate(ctx context.Context) error
 	// Inactivate(ctx context.Context) error
 }
 
 type UserRepository interface {
-	Save(ctx context.Context, user *UserEntity) error
+	Save(ctx context.Context, user *User) error
 	// Update(ctx context.Context, UserEntity) UserEntity
 }

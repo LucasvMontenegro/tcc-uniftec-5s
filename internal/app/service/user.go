@@ -8,15 +8,15 @@ import (
 )
 
 type UserImpl struct {
-	userEntity     *entity.UserEntity
+	userEntity     *entity.User
 	userRepository entity.UserRepository
 }
 
-func (s UserImpl) Self(ctx context.Context) *entity.UserEntity {
+func (s UserImpl) Self(ctx context.Context) *entity.User {
 	return s.userEntity
 }
 
-func (s UserImpl) Create(ctx context.Context) (*entity.UserEntity, error) {
+func (s UserImpl) Create(ctx context.Context) (*entity.User, error) {
 	log.Info().Msg("creating user")
 
 	err := s.userRepository.Save(ctx, s.userEntity)
