@@ -19,7 +19,7 @@ func NewUserRepository(db *gorm.DB) entity.UserRepository {
 	}
 }
 
-func (r userRepository) Save(ctx context.Context, user *entity.UserEntity) error {
+func (r userRepository) Save(ctx context.Context, user *entity.User) error {
 	dbconn := r.db
 	ctxValue, ok := ctx.Value(CtxKey{}).(CtxValue)
 	if ok {

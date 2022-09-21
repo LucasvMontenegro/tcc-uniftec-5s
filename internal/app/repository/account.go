@@ -20,7 +20,7 @@ func NewAccountRepository(db *gorm.DB) entity.AccountRepository {
 	}
 }
 
-func (r accountRepository) Save(ctx context.Context, account *entity.AccountEntity) error {
+func (r accountRepository) Save(ctx context.Context, account *entity.Account) error {
 	dbconn := r.db
 	ctxValue, ok := ctx.Value(CtxKey{}).(CtxValue)
 	if ok {
@@ -44,7 +44,7 @@ func (r accountRepository) Save(ctx context.Context, account *entity.AccountEnti
 	return err
 }
 
-func (r accountRepository) Update(ctx context.Context, account *entity.AccountEntity) error {
+func (r accountRepository) Update(ctx context.Context, account *entity.Account) error {
 	dbconn := r.db
 	ctxValue, ok := ctx.Value(CtxKey{}).(CtxValue)
 	if ok {

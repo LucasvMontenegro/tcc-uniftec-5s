@@ -2,24 +2,24 @@ package entity
 
 import "context"
 
-type AccountEntity struct {
+type Account struct {
 	ID         *int64
-	User       *UserEntity
-	Credential *CredentialEntity
+	User       *User
+	Credential *Credential
 }
 
 type AccountInterface interface {
-	Self(ctx context.Context) *AccountEntity
-	Create(ctx context.Context) (*AccountEntity, error)
-	AddUser(ctx context.Context, user *UserEntity) error
+	Self(ctx context.Context) *Account
+	Create(ctx context.Context) (*Account, error)
+	AddUser(ctx context.Context, user *User) error
 	// Get(ctx context.Context, id int64) (AccountEntity, error)
 }
 
 type AccountRepository interface {
-	Save(ctx context.Context, account *AccountEntity) error
-	Update(ctx context.Context, account *AccountEntity) error
+	Save(ctx context.Context, account *Account) error
+	Update(ctx context.Context, account *Account) error
 }
 
 type AccountFactoryInterface interface {
-	NewAccount(credential *CredentialEntity) AccountInterface
+	NewAccount(credential *Credential) AccountInterface
 }

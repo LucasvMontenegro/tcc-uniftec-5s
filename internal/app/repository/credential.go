@@ -20,7 +20,7 @@ func NewCredentialRepository(db *gorm.DB) entity.CredentialRepository {
 	}
 }
 
-func (r credentialRepository) Save(ctx context.Context, credential *entity.CredentialEntity) error {
+func (r credentialRepository) Save(ctx context.Context, credential *entity.Credential) error {
 	dbconn := r.db
 	ctxValue, ok := ctx.Value(CtxKey{}).(CtxValue)
 	if ok {
@@ -43,7 +43,7 @@ func (r credentialRepository) Save(ctx context.Context, credential *entity.Crede
 	return err
 }
 
-func (r credentialRepository) Update(ctx context.Context, credential *entity.CredentialEntity) error {
+func (r credentialRepository) Update(ctx context.Context, credential *entity.Credential) error {
 	dbconn := r.db
 	ctxValue, ok := ctx.Value(CtxKey{}).(CtxValue)
 	if ok {
@@ -69,7 +69,7 @@ func (r credentialRepository) Update(ctx context.Context, credential *entity.Cre
 	return err
 }
 
-func (r credentialRepository) Identify(ctx context.Context, credential *entity.CredentialEntity) error {
+func (r credentialRepository) Identify(ctx context.Context, credential *entity.Credential) error {
 	dbconn := r.db
 	ctxValue, ok := ctx.Value(CtxKey{}).(CtxValue)
 	if ok {
@@ -96,7 +96,7 @@ func (r credentialRepository) Identify(ctx context.Context, credential *entity.C
 	return err
 }
 
-func (r credentialRepository) UpdatePassword(ctx context.Context, credential *entity.CredentialEntity) error {
+func (r credentialRepository) UpdatePassword(ctx context.Context, credential *entity.Credential) error {
 	dbconn := r.db
 	ctxValue, ok := ctx.Value(CtxKey{}).(CtxValue)
 	if ok {

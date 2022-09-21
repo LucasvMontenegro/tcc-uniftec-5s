@@ -20,12 +20,12 @@ func NewSessionRepository(db *gorm.DB) entity.SessionRepository {
 	}
 }
 
-func (r sessionRepository) Save(ctx context.Context, session *entity.SessionEntity) error {
+func (r sessionRepository) Save(ctx context.Context, session *entity.Session) error {
 	// redis
 	return nil
 }
 
-func (r sessionRepository) SaveHistory(ctx context.Context, session *entity.SessionEntity) error {
+func (r sessionRepository) SaveHistory(ctx context.Context, session *entity.Session) error {
 	dbconn := r.db
 	ctxValue, ok := ctx.Value(CtxKey{}).(CtxValue)
 	if ok {

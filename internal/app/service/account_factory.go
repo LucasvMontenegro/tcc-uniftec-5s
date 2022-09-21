@@ -12,8 +12,8 @@ func NewAccountFactory(accountRepository entity.AccountRepository) entity.Accoun
 	}
 }
 
-func (f accountFactory) NewAccount(credential *entity.CredentialEntity) entity.AccountInterface {
-	account := entity.AccountEntity{
+func (f accountFactory) NewAccount(credential *entity.Credential) entity.AccountInterface {
+	account := entity.Account{
 		Credential: credential,
 	}
 
