@@ -28,6 +28,7 @@ func (r edition) Save(ctx context.Context, edition *entity.Edition) error {
 	editionDS := datastructure.Edition{
 		Name:        &edition.Name,
 		Description: edition.Description,
+		Status:      edition.Status,
 		StartDate:   &edition.StartDate,
 		EndDate:     &edition.EndDate,
 	}

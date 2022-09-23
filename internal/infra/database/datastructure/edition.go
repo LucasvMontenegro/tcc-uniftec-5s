@@ -9,6 +9,7 @@ type Edition struct {
 	WinnerID    *int64
 	Name        *string
 	Description *string
+	Status      *string
 	StartDate   *time.Time
 	EndDate     *time.Time
 }

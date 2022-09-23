@@ -26,6 +26,10 @@ func (s edition) Create(ctx context.Context) error {
 		return err
 	}
 
+	if err := s.validateStatus(ctx); err != nil {
+		return err
+	}
+
 	if err := s.editionRepository.Save(ctx, s.Self()); err != nil {
 		log.Info().Msg("error saving edition")
 		return err
@@ -40,6 +44,17 @@ func (s edition) validateDates(ctx context.Context) error {
 	if s.editionEntity.EndDate.Before(s.editionEntity.StartDate) {
 		log.Warn().Msg("start date must be before end date")
 		return ErrInvalidEditionDate
+	}
+
+	return nil
+}
+
+func (s edition) validateStatus(ctx context.Context) error {
+	log.Info().Msg("validating status")
+
+	if s.editionEntity.Status == nil {
+		status := "WAITING"
+		s.editionEntity.Status = &status
 	}
 
 	return nil

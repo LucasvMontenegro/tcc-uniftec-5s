@@ -6,6 +6,7 @@ type CreateEdition struct {
 	Edition struct {
 		Name        string    `json:"name" validate:"required"`
 		Description *string   `json:"description"`
+		Status      *string   `json:"status"`
 		StartDate   time.Time `json:"start_date" validate:"required"`
 		EndDate     time.Time `json:"end_date" validate:"required"`
 	} `json:"edition" validate:"required"`
