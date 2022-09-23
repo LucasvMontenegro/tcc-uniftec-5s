@@ -30,16 +30,16 @@ type user struct {
 }
 
 func (c user) RegisterRoutes() {
-	c.Instance.GET("/users", c.ListTeamlessUsers())
+	c.Instance.GET("/edition/users", c.ListTeamlessUsers())
 }
 
 func (uc user) ListTeamlessUsers() func(c echo.Context) error {
 	return func(c echo.Context) error {
-		log.Info().Msg("/users")
+		log.Info().Msg("/edition/users")
 
 		u, err := uc.listTeamlessUsersUseCase.Execute(c.Request().Context())
 		if err != nil {
-			log.Error().Msg("/users error")
+			log.Error().Msg("/edition/users error")
 			return c.NoContent(http.StatusInternalServerError) // todo handle error
 		}
 
