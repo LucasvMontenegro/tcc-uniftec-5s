@@ -12,7 +12,7 @@ type UserImpl struct {
 	userRepository entity.UserRepository
 }
 
-func (s UserImpl) Self(ctx context.Context) *entity.User {
+func (s UserImpl) Self() *entity.User {
 	return s.userEntity
 }
 
