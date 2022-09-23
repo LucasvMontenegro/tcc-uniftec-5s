@@ -10,6 +10,7 @@ type Edition struct {
 	Winner      *Team
 	Name        string
 	Description *string
+	Status      *string
 	StartDate   time.Time
 	EndDate     time.Time
 }

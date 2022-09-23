@@ -13,15 +13,16 @@ type User struct {
 	Name    string
 	IsAdmin bool
 	Status  UserStatusEnum
-	Team    string /*TeamEntity*/
+	Team    *Team
 }
 
 type UserFactoryInterface interface {
 	NewUser(account *Account, name string) UserInterface
+	GetTeamlessUsers(ctx context.Context) ([]UserInterface, error)
 }
 
 type UserInterface interface {
-	Self(ctx context.Context) *User
+	Self() *User
 	Create(ctx context.Context) (*User, error)
 	// UpdateName(ctx context.Context) error
 	// Activate(ctx context.Context) error
@@ -30,5 +31,7 @@ type UserInterface interface {
 
 type UserRepository interface {
 	Save(ctx context.Context, user *User) error
+	GetTeamlessUsers(ctx context.Context) ([]*User, error)
+
 	// Update(ctx context.Context, UserEntity) UserEntity
 }

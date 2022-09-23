@@ -1,6 +1,10 @@
 package service
 
-import "github.com/tcc-uniftec-5s/internal/domain/entity"
+import (
+	"context"
+
+	"github.com/tcc-uniftec-5s/internal/domain/entity"
+)
 
 type UserFactory struct {
 	userRepository entity.UserRepository
@@ -23,4 +27,23 @@ func (f UserFactory) NewUser(account *entity.Account, name string) entity.UserIn
 		userEntity:     &user,
 		userRepository: f.userRepository,
 	}
+}
+
+func (f UserFactory) GetTeamlessUsers(ctx context.Context) ([]entity.UserInterface, error) {
+	users, err := f.userRepository.GetTeamlessUsers(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	uis := make([]entity.UserInterface, 0)
+	for _, user := range users {
+		impl := UserImpl{
+			userEntity:     user,
+			userRepository: f.userRepository,
+		}
+
+		uis = append(uis, impl)
+	}
+
+	return uis, nil
 }

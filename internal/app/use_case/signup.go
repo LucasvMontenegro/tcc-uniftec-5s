@@ -82,7 +82,7 @@ func (uc signup) Signup(ctx context.Context, email, password, name string) error
 		return err
 	}
 
-	if err := account.AddUser(ctx, user.Self(ctx)); err != nil {
+	if err := account.AddUser(ctx, user.Self()); err != nil {
 		log.Info().Msg("rolling back tx")
 		if txerr := uc.txHandler.Rollback(ctx); txerr != nil {
 			return txerr
