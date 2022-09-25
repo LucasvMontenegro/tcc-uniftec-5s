@@ -22,8 +22,10 @@ type EditionInterface interface {
 
 type EditionRepository interface {
 	Save(ctx context.Context, edition *Edition) error
+	GetCurrent(ctx context.Context, edition *Edition) error
 }
 
 type EditionFactoryInterface interface {
 	NewEdition(name string, description *string, startDate, endDate time.Time) EditionInterface
+	GetCurrent(ctx context.Context) (EditionInterface, error)
 }
