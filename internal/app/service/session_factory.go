@@ -14,7 +14,7 @@ func NewSessionFactory(sessionRepository entity.SessionRepository) entity.Sessio
 
 func (f sessionFactory) NewSession(credential *entity.Credential) entity.SessionInterface {
 	session := entity.Session{
-		JWT:           &credential.JWT,
+		JWT:           credential.JWT,
 		AccountEntity: *credential.Account,
 	}
 
