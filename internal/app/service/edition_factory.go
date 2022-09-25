@@ -1,8 +1,10 @@
 package service
 
 import (
+	"context"
 	"time"
 
+	"github.com/rs/zerolog/log"
 	"github.com/tcc-uniftec-5s/internal/domain/entity"
 )
 
@@ -28,4 +30,18 @@ func (f editionFactory) NewEdition(name string, description *string, startDate t
 		editionEntity:     &entity,
 		editionRepository: f.editionRepository,
 	}
+}
+
+func (f editionFactory) GetCurrent(ctx context.Context) (entity.EditionInterface, error) {
+	log.Info().Msg("getting current edition")
+	e := &entity.Edition{}
+	if err := f.editionRepository.GetCurrent(ctx, e); err != nil {
+		log.Info().Msg("error getting current edition")
+		return nil, err
+	}
+
+	return edition{
+		editionEntity:     e,
+		editionRepository: f.editionRepository,
+	}, nil
 }

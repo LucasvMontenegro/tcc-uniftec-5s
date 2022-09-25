@@ -51,6 +51,7 @@ func Init(rootdir string) {
 	sessionRepository := repository.NewSessionRepository(pgService)
 	editionRepository := repository.NewEdition(pgService)
 	prizeRepository := repository.NewPrize(pgService)
+	teamRepository := repository.NewTeam(pgService)
 
 	credentialFactory := service.NewCredentialFactory(credentialRepository)
 	accountFactory := service.NewAccountFactory(accountRepository)
@@ -58,12 +59,14 @@ func Init(rootdir string) {
 	sessionFactory := service.NewSessionFactory(sessionRepository)
 	editionFactory := service.NewEditionFactory(editionRepository)
 	prizeFactory := service.NewPrizeFactory(prizeRepository)
+	teamFactory := service.NewTeamFactory(teamRepository)
 
 	signupUseCase := usecase.NewSignup(txHandler, credentialFactory, accountFactory, userFactory)
 	loginUseCase := usecase.NewLogin(txHandler, credentialFactory, sessionFactory)
 	resetPasswordUseCase := usecase.NewResetPassword(txHandler, credentialFactory)
 	createEditionUseCase := usecase.NewCreateEdition(txHandler, editionFactory, prizeFactory)
 	listTeamlessUsersUseCase := usecase.NewListTeamlessUsers(txHandler, userFactory)
+	createTeamUseCase := usecase.NewCreateTeam(txHandler, teamFactory, editionFactory)
 
 	httpServer := server.New(
 		fmt.Sprintf(":%s", "3000"),
@@ -76,6 +79,7 @@ func Init(rootdir string) {
 		controller.NewResetPasswordController(httpServer.Instance, resetPasswordUseCase),
 		controller.NewEdition(httpServer.Instance, createEditionUseCase),
 		controller.NewUser(httpServer.Instance, listTeamlessUsersUseCase),
+		controller.NewTeam(httpServer.Instance, createTeamUseCase),
 	}
 
 	registerControllersRoutes(controllers)

@@ -42,3 +42,29 @@ func (r edition) Save(ctx context.Context, edition *entity.Edition) error {
 	edition.ID = editionDS.ID
 	return err
 }
+
+func (r edition) GetCurrent(ctx context.Context, edition *entity.Edition) error {
+	dbconn := r.db
+	ctxValue, ok := ctx.Value(CtxKey{}).(CtxValue)
+	if ok {
+		dbconn = ctxValue.tx
+	}
+
+	editionDS := datastructure.Edition{}
+
+	err := dbconn.
+		WithContext(ctx).
+		Table("editions").
+		Where("status = ?", "ACTIVE").
+		Find(&editionDS).
+		Error
+
+	edition.ID = editionDS.ID
+	edition.Name = *editionDS.Name
+	edition.Description = editionDS.Description
+	edition.StartDate = *editionDS.StartDate
+	edition.EndDate = *editionDS.EndDate
+	edition.Status = editionDS.Status
+
+	return err
+}
