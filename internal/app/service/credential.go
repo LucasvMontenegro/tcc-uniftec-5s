@@ -5,6 +5,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 	"github.com/tcc-uniftec-5s/internal/domain/entity"
+	"github.com/tcc-uniftec-5s/internal/token"
 )
 
 type CredentialImpl struct {
@@ -48,13 +49,39 @@ func (s CredentialImpl) Identify(ctx context.Context) error {
 		return err
 	}
 
-	s.generateJWT(ctx)
+	if err := s.generateJWT(ctx); err != nil {
+		return err
+	}
+
 	return nil
 }
 
-func (s CredentialImpl) generateJWT(ctx context.Context) {
+type Claims struct {
+	username string
+	is_admin bool
+}
+
+func (Claims) Valid() error {
+	return nil
+}
+
+func (s CredentialImpl) generateJWT(ctx context.Context) error {
 	log.Info().Msg("generating JWT")
-	s.CredentialEntity.JWT = "JWT"
+
+	maker, err := token.NewJWTMaker("fsdjkfhsdhfsdhkfjkdshjfkskdjfjksdjkjkfjkshkfjs")
+	if err != nil {
+		return err
+	}
+	token, err := maker.CreateToken(
+		s.CredentialEntity.Account.User.Name,
+		s.CredentialEntity.Account.User.IsAdmin,
+	)
+	if err != nil {
+		return err
+	}
+
+	s.CredentialEntity.JWT = &token
+	return nil
 }
 
 func (s CredentialImpl) UpdatePassword(ctx context.Context, password string) error {
