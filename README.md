@@ -36,7 +36,7 @@ To run this project is necessary to add some environment variables.
 | ENVIRONMENT                              | local                                            |          | Environment name |
 | LOG_LEVEL                                | DEBUG                                            |          | Log Level                                  |
 | SERVER_PORT                              | 3000                                             |          | Server Port. (used to run the http server) |
-| DB_NAME                                  | sample                                           |          | Database name                              |
+| DB_NAME                                  | tcc-uniftec                                      |          | Database name                              |
 | DB_HOST                                  | localhost                                        |          | Database Hostname                          |
 | DB_PORT                                  | 5432                                             |          | Database port service                      |
 | DB_USER                                  | admin                                            |          | Database User                              |

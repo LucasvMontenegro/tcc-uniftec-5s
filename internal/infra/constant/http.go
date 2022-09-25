@@ -6,10 +6,6 @@ import (
 	"schneider.vip/problem"
 )
 
-const (
-	SampleRessource string = "/sample"
-)
-
 var (
 	ProblemInvalidContract = problem.New(
 		problem.Title("INVALID_CONTRACT"),
