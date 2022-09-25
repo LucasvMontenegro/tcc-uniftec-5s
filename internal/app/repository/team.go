@@ -27,7 +27,7 @@ func (r team) Save(ctx context.Context, team *entity.Team, edition *entity.Editi
 
 	teamDS := datastructure.Team{
 		Name:      team.Name,
-		EditionId: edition.ID,
+		EditionID: edition.ID,
 	}
 
 	err := dbconn.
@@ -36,6 +36,6 @@ func (r team) Save(ctx context.Context, team *entity.Team, edition *entity.Editi
 		Create(&teamDS).
 		Error
 
-	team.Id = teamDS.Id
+	team.ID = teamDS.ID
 	return err
 }

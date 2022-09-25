@@ -1,7 +1,7 @@
 package datastructure
 
 type Team struct {
-	Id        *int64
+	ID        *int64
 	Name      string
-	EditionId *int64
+	EditionID *int64
 }

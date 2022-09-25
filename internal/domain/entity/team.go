@@ -3,7 +3,7 @@ package entity
 import "context"
 
 type Team struct {
-	Id      *int64
+	ID      *int64
 	Name    string
 	Edition *Edition
 	Users   []*User

@@ -6,7 +6,7 @@ import (
 
 type Credential struct {
 	ID       *int64
-	JWT      string
+	JWT      *string
 	Email    string
 	Account  *Account
 	Password string

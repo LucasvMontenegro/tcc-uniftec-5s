@@ -18,9 +18,10 @@ func NewEditionFactory(editionRepository entity.EditionRepository) entity.Editio
 	}
 }
 
-func (f editionFactory) NewEdition(name string, description *string, startDate time.Time, endDate time.Time) entity.EditionInterface {
+func (f editionFactory) NewEdition(name string, description, status *string, startDate time.Time, endDate time.Time) entity.EditionInterface {
 	entity := entity.Edition{
 		Name:        name,
+		Status:      status,
 		Description: description,
 		StartDate:   startDate,
 		EndDate:     endDate,

@@ -22,6 +22,7 @@ type PrizeDTO struct {
 type EditionDTO struct {
 	Name        string
 	Description *string
+	Status      *string
 	StartDate   time.Time
 	EndDate     time.Time
 }
@@ -57,7 +58,7 @@ func (uc createEdition) Execute(ctx context.Context, dto CreateEditionDTO) error
 		return err
 	}
 
-	edition := uc.editionFactory.NewEdition(dto.EditionDTO.Name, dto.EditionDTO.Description, dto.EditionDTO.StartDate, dto.EditionDTO.EndDate)
+	edition := uc.editionFactory.NewEdition(dto.EditionDTO.Name, dto.EditionDTO.Description, dto.EditionDTO.Status, dto.EditionDTO.StartDate, dto.EditionDTO.EndDate)
 	if err := edition.Create(ctx); err != nil {
 		log.Info().Msg("rolling back tx")
 		if txerr := uc.txHandler.Rollback(ctx); txerr != nil {
