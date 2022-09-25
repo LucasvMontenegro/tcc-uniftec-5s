@@ -6,7 +6,8 @@ import (
 
 type Credential struct {
 	ID        *int64 `gorm:"primarykey"`
-	AccountId *int64
+	AccountID *int64
+	Account   *Account
 	Email     *string
 	Password  *string
 	CreatedAt *time.Time
