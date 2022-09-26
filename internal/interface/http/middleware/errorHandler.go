@@ -26,7 +26,6 @@ func CustomHTTPErrorHandler(err error, c echo.Context) {
 	problemJSON = problem.New(
 		problem.Title(message),
 		problem.Status(status),
-		problem.Type("todo"),
 	)
 
 	c.JSON(status, problemJSON)
