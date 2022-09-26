@@ -13,6 +13,7 @@ import (
 	logConfig "github.com/tcc-uniftec-5s/internal/infra/log"
 	server "github.com/tcc-uniftec-5s/internal/interface/http"
 	"github.com/tcc-uniftec-5s/internal/interface/http/controller"
+	"github.com/tcc-uniftec-5s/internal/token"
 )
 
 type TracerLogger struct {
@@ -53,7 +54,12 @@ func Init(rootdir string) {
 	prizeRepository := repository.NewPrize(pgService)
 	teamRepository := repository.NewTeam(pgService)
 
-	credentialFactory := service.NewCredentialFactory(credentialRepository)
+	jwtMaker, err := token.NewJWTMaker(environment.Env.JWTSigningKey)
+	if err != nil {
+		log.Fatal().Stack().Err(err).Msg("error generating new jwt maker")
+	}
+
+	credentialFactory := service.NewCredentialFactory(credentialRepository, jwtMaker)
 	accountFactory := service.NewAccountFactory(accountRepository)
 	userFactory := service.NewUserFactory(userRepository)
 	sessionFactory := service.NewSessionFactory(sessionRepository)
@@ -71,15 +77,18 @@ func Init(rootdir string) {
 	httpServer := server.New(
 		fmt.Sprintf(":%s", "3000"),
 		"tcc-uniftec-5s",
+		environment.Env.JWTSigningKey,
 	)
+
+	accessValidator := controller.NewAccessValidator()
 
 	controllers := []controller.Router{
 		controller.NewSignupController(httpServer.Instance, signupUseCase),
 		controller.NewLoginController(httpServer.Instance, loginUseCase),
 		controller.NewResetPasswordController(httpServer.Instance, resetPasswordUseCase),
-		controller.NewEdition(httpServer.Instance, createEditionUseCase),
+		controller.NewEdition(httpServer.Instance, httpServer.Restricted, accessValidator, createEditionUseCase),
 		controller.NewUser(httpServer.Instance, listTeamlessUsersUseCase),
-		controller.NewTeam(httpServer.Instance, createTeamUseCase),
+		controller.NewTeam(httpServer.Instance, httpServer.Restricted, accessValidator, createTeamUseCase),
 	}
 
 	registerControllersRoutes(controllers)

@@ -13,10 +13,14 @@ import (
 
 func NewEdition(
 	instance *echo.Echo,
+	restricted *echo.Group,
+	accessValidator AccessValidator,
 	createEditionUseCase usecase.CreateEdition) Edition {
 
 	return &edition{
 		Instance:             instance,
+		restricted:           restricted,
+		accessValidator:      accessValidator,
 		createEditionUseCase: createEditionUseCase,
 	}
 }
@@ -28,6 +32,8 @@ type Edition interface {
 
 type edition struct {
 	Instance             *echo.Echo
+	restricted           *echo.Group
+	accessValidator      AccessValidator
 	createEditionUseCase usecase.CreateEdition
 }
 

@@ -13,10 +13,14 @@ import (
 
 func NewTeam(
 	instance *echo.Echo,
+	restricted *echo.Group,
+	accessValidator AccessValidator,
 	createTeamUseCase usecase.CreateTeam) Team {
 
 	return &team{
 		Instance:          instance,
+		restricted:        restricted,
+		accessValidator:   accessValidator,
 		createTeamUseCase: createTeamUseCase,
 	}
 }
@@ -28,16 +32,23 @@ type Team interface {
 
 type team struct {
 	Instance          *echo.Echo
+	restricted        *echo.Group
+	accessValidator   AccessValidator
 	createTeamUseCase usecase.CreateTeam
 }
 
 func (c team) RegisterRoutes() {
-	c.Instance.POST("/edition/teams", c.CreateTeam())
+	c.restricted.POST("/edition/teams", c.CreateTeam())
 }
 
-func (ec team) CreateTeam() func(c echo.Context) error {
+func (tc team) CreateTeam() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		log.Info().Msg("/edition/teams")
+
+		if err := tc.accessValidator.Restrict(c); err != nil {
+			c.Error(err)
+			return nil
+		}
 
 		var createTeamReq request.CreateTeam
 
@@ -66,7 +77,7 @@ func (ec team) CreateTeam() func(c echo.Context) error {
 			return c.JSON(status, prob)
 		}
 
-		team, err := ec.createTeamUseCase.Execute(c.Request().Context(), createTeamReq.Name)
+		team, err := tc.createTeamUseCase.Execute(c.Request().Context(), createTeamReq.Name)
 		if err != nil {
 			log.Error().Interface("new team request", createTeamReq).Msg("/edition/teams error")
 			return c.NoContent(http.StatusInternalServerError) // todo handle error
