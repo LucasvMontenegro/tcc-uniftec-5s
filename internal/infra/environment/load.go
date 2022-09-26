@@ -26,6 +26,8 @@ type EnvVars struct {
 	Environment string `env:"ENVIRONMENT"`
 	LogLevel    string `env:"LOG_LEVEL"`
 	HttpPort    string `env:"HTTP_PORT"`
+
+	JWTSigningKey string `env:"JWT_SIGNING_KEY"`
 }
 
 func LoadEnv(filenames ...string) {
