@@ -1,14 +1,19 @@
 package service
 
-import "github.com/tcc-uniftec-5s/internal/domain/entity"
+import (
+	"github.com/tcc-uniftec-5s/internal/domain/entity"
+	"github.com/tcc-uniftec-5s/internal/token"
+)
 
 type credentialFactory struct {
 	credentialRepository entity.CredentialRepository
+	jwtMaker             token.Maker
 }
 
-func NewCredentialFactory(credentialRepository entity.CredentialRepository) entity.CredentialFactoryInterface {
+func NewCredentialFactory(credentialRepository entity.CredentialRepository, maker token.Maker) entity.CredentialFactoryInterface {
 	return credentialFactory{
 		credentialRepository: credentialRepository,
+		jwtMaker:             maker,
 	}
 }
 
@@ -21,7 +26,8 @@ func (f credentialFactory) NewCredential(email, password string) entity.Credenti
 	}
 
 	return CredentialImpl{
-		CredentialEntity:     &credential,
-		CredentialRepository: f.credentialRepository,
+		credentialEntity:     &credential,
+		credentialRepository: f.credentialRepository,
+		jwtMaker:             f.jwtMaker,
 	}
 }

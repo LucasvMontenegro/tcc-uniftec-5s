@@ -18,26 +18,15 @@ type Maker interface {
 	VerifyToken(token string) (*Payload, error)
 }
 
+type JWTMaker struct {
+	secretKey string
+}
 type Payload struct {
 	Username  string    `json:"username"`
 	IsAdmin   bool      `json:"is_admin"`
 	IssuedAt  time.Time `json:"issued_at"`
-	ExpiredAt time.Time `json:"expired_at"`
-}
-
-func NewPayload(username string, isAdmin bool) (*Payload, error) {
-	payload := &Payload{
-		Username:  username,
-		IsAdmin:   isAdmin,
-		IssuedAt:  time.Now(),
-		ExpiredAt: time.Now().Add(2 * time.Hour),
-	}
-
-	return payload, nil
-}
-
-type JWTMaker struct {
-	secretKey string
+	ExpiresAt time.Time `json:"expires_at"`
+	// jwt.StandardClaims
 }
 
 const minSecretKeySize = 32
@@ -51,7 +40,7 @@ func NewJWTMaker(secretKey string) (Maker, error) {
 }
 
 func (maker *JWTMaker) CreateToken(username string, isAdmin bool) (string, error) {
-	payload, err := NewPayload(username, isAdmin)
+	payload, err := newPayload(username, isAdmin)
 	if err != nil {
 		return "", err
 	}
@@ -87,8 +76,20 @@ func (maker *JWTMaker) VerifyToken(token string) (*Payload, error) {
 }
 
 func (payload *Payload) Valid() error {
-	if time.Now().After(payload.ExpiredAt) {
+	if time.Now().After(payload.ExpiresAt) {
 		return ErrExpiredToken
 	}
+
 	return nil
+}
+
+func newPayload(username string, isAdmin bool) (*Payload, error) {
+	payload := &Payload{
+		Username:  username,
+		IsAdmin:   isAdmin,
+		IssuedAt:  time.Now(),
+		ExpiresAt: time.Now().Add(2 * time.Hour),
+	}
+
+	return payload, nil
 }

@@ -9,18 +9,19 @@ import (
 )
 
 type CredentialImpl struct {
-	CredentialEntity     *entity.Credential
-	CredentialRepository entity.CredentialRepository
+	credentialEntity     *entity.Credential
+	credentialRepository entity.CredentialRepository
+	jwtMaker             token.Maker
 }
 
 func (s CredentialImpl) Self(ctx context.Context) *entity.Credential {
-	return s.CredentialEntity
+	return s.credentialEntity
 }
 
 func (s CredentialImpl) Signup(ctx context.Context) error {
 	log.Info().Msg("creating credential")
 
-	if err := s.CredentialRepository.Save(ctx, s.CredentialEntity); err != nil {
+	if err := s.credentialRepository.Save(ctx, s.credentialEntity); err != nil {
 		log.Info().Msg("error saving credential")
 		return err
 	}
@@ -31,9 +32,9 @@ func (s CredentialImpl) Signup(ctx context.Context) error {
 func (s CredentialImpl) AddAccount(ctx context.Context, account *entity.Account) error {
 	log.Info().Msg("adding account to credential")
 
-	s.CredentialEntity.Account = account
+	s.credentialEntity.Account = account
 
-	if err := s.CredentialRepository.SetAccount(ctx, s.CredentialEntity); err != nil {
+	if err := s.credentialRepository.SetAccount(ctx, s.credentialEntity); err != nil {
 		log.Info().Msg("error saving credential")
 		return err
 	}
@@ -43,7 +44,7 @@ func (s CredentialImpl) AddAccount(ctx context.Context, account *entity.Account)
 
 func (s CredentialImpl) Identify(ctx context.Context) error {
 	log.Info().Msg("identifying credential")
-	if err := s.CredentialRepository.Identify(ctx, s.CredentialEntity); err != nil {
+	if err := s.credentialRepository.Identify(ctx, s.credentialEntity); err != nil {
 		// IF NOT FOUND log.Info().Msg("credential not found")
 		log.Info().Msg("error identifying credential")
 		return err
@@ -56,44 +57,31 @@ func (s CredentialImpl) Identify(ctx context.Context) error {
 	return nil
 }
 
-type Claims struct {
-	username string
-	is_admin bool
-}
+func (s CredentialImpl) UpdatePassword(ctx context.Context, password string) error {
+	log.Info().Msg("updating credential password")
 
-func (Claims) Valid() error {
+	s.credentialEntity.Password = password
+
+	if err := s.credentialRepository.UpdatePassword(ctx, s.credentialEntity); err != nil {
+		// IF NOT FOUND log.Info().Msg("credential not found")
+		log.Info().Msg("error updating credential password")
+		return nil
+	}
+
 	return nil
 }
 
 func (s CredentialImpl) generateJWT(ctx context.Context) error {
 	log.Info().Msg("generating JWT")
 
-	maker, err := token.NewJWTMaker("fsdjkfhsdhfsdhkfjkdshjfkskdjfjksdjkjkfjkshkfjs")
-	if err != nil {
-		return err
-	}
-	token, err := maker.CreateToken(
-		s.CredentialEntity.Account.User.Name,
-		s.CredentialEntity.Account.User.IsAdmin,
+	token, err := s.jwtMaker.CreateToken(
+		s.credentialEntity.Account.User.Name,
+		s.credentialEntity.Account.User.IsAdmin,
 	)
 	if err != nil {
 		return err
 	}
 
-	s.CredentialEntity.JWT = &token
-	return nil
-}
-
-func (s CredentialImpl) UpdatePassword(ctx context.Context, password string) error {
-	log.Info().Msg("updating credential password")
-
-	s.CredentialEntity.Password = password
-
-	if err := s.CredentialRepository.UpdatePassword(ctx, s.CredentialEntity); err != nil {
-		// IF NOT FOUND log.Info().Msg("credential not found")
-		log.Info().Msg("error updating credential password")
-		return nil
-	}
-
+	s.credentialEntity.JWT = &token
 	return nil
 }
