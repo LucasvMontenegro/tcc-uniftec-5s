@@ -56,15 +56,17 @@ func (r edition) GetCurrent(ctx context.Context, edition *entity.Edition) error 
 		WithContext(ctx).
 		Table("editions").
 		Where("status = ?", "ACTIVE").
-		Find(&editionDS).
+		First(&editionDS).
 		Error
 
-	edition.ID = editionDS.ID
-	edition.Name = *editionDS.Name
-	edition.Description = editionDS.Description
-	edition.StartDate = *editionDS.StartDate
-	edition.EndDate = *editionDS.EndDate
-	edition.Status = editionDS.Status
+	if err == nil {
+		edition.ID = editionDS.ID
+		edition.Name = *editionDS.Name
+		edition.Description = editionDS.Description
+		edition.StartDate = *editionDS.StartDate
+		edition.EndDate = *editionDS.EndDate
+		edition.Status = editionDS.Status
+	}
 
 	return err
 }
