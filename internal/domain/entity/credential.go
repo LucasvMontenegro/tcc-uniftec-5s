@@ -2,7 +2,10 @@ package entity
 
 import (
 	"context"
+	"errors"
 )
+
+var ErrCredentialAlreadyExists = errors.New("credential already exists")
 
 type Credential struct {
 	ID       *int64

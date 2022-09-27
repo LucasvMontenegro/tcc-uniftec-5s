@@ -2,9 +2,12 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"time"
 
+	"github.com/jackc/pgconn"
 	"github.com/tcc-uniftec-5s/internal/domain/entity"
+	"github.com/tcc-uniftec-5s/internal/infra/database"
 	"github.com/tcc-uniftec-5s/internal/infra/database/datastructure"
 	"gorm.io/gorm"
 )
@@ -39,7 +42,16 @@ func (r credentialRepository) Save(ctx context.Context, credential *entity.Crede
 		Create(&credentialDS).
 		Error
 
-	credential.ID = credentialDS.ID
+	if err != nil {
+		var pgErr *pgconn.PgError
+		errors.As(err, &pgErr)
+		if pgErr.Code == database.ErrCodes[database.ErrUniqueViolation] {
+			return entity.ErrCredentialAlreadyExists
+		}
+	} else {
+		credential.ID = credentialDS.ID
+	}
+
 	return err
 }
 

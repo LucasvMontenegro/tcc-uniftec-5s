@@ -77,3 +77,8 @@ func MigrateUp(gormInstance *gorm.DB, database string, path string) error {
 
 	return nil
 }
+
+var ErrUniqueViolation = "unique_violation"
+var ErrCodes = map[string]string{
+	ErrUniqueViolation: "23505",
+}

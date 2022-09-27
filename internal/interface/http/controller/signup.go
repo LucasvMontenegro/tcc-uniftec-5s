@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
 	usecase "github.com/tcc-uniftec-5s/internal/app/use_case"
+	"github.com/tcc-uniftec-5s/internal/domain/entity"
 	"github.com/tcc-uniftec-5s/internal/interface/http/dto/request"
 	"schneider.vip/problem"
 )
@@ -69,10 +70,32 @@ func (sc signupController) Signup() func(c echo.Context) error {
 		err := sc.signupUseCase.Signup(c.Request().Context(), signupReq.Email, signupReq.Password, signupReq.Name)
 		if err != nil {
 			log.Error().Interface("signup request", signupReq).Msg("/signup error")
-			return c.NoContent(http.StatusInternalServerError) // todo handle error
+			return sc.handleErr(c, err)
 		}
 
 		log.Info().Msg("signup success")
-		return c.NoContent(http.StatusNoContent)
+		return c.NoContent(http.StatusCreated)
 	}
+}
+
+func (sc signupController) handleErr(c echo.Context, err error) error {
+	var problemJSON *problem.Problem
+
+	detail := "internal server error"
+	status := http.StatusInternalServerError
+	title := "Internal Server Error"
+
+	switch err {
+	case entity.ErrCredentialAlreadyExists:
+		detail = "email already exists"
+		status = http.StatusConflict
+	}
+
+	problemJSON = problem.New(
+		problem.Title(title),
+		problem.Detail(detail),
+		problem.Status(status),
+	)
+
+	return c.JSON(status, problemJSON)
 }
