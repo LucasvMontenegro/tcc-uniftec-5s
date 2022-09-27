@@ -24,8 +24,8 @@ func CustomHTTPErrorHandler(err error, c echo.Context) {
 	}
 
 	problemJSON = problem.New(
-		problem.Title(message),
 		problem.Status(status),
+		problem.Title(message),
 	)
 
 	c.JSON(status, problemJSON)

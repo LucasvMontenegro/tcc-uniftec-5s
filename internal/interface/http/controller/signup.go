@@ -81,9 +81,9 @@ func (sc signupController) Signup() func(c echo.Context) error {
 func (sc signupController) handleErr(c echo.Context, err error) error {
 	var problemJSON *problem.Problem
 
-	detail := "internal server error"
 	status := http.StatusInternalServerError
-	title := "Internal Server Error"
+	detail := "internal server error"
+	title := "internal server error"
 
 	switch err {
 	case entity.ErrCredentialAlreadyExists:
@@ -92,9 +92,9 @@ func (sc signupController) handleErr(c echo.Context, err error) error {
 	}
 
 	problemJSON = problem.New(
+		problem.Status(status),
 		problem.Title(title),
 		problem.Detail(detail),
-		problem.Status(status),
 	)
 
 	return c.JSON(status, problemJSON)
