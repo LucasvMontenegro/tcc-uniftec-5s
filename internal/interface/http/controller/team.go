@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
 	usecase "github.com/tcc-uniftec-5s/internal/app/use_case"
+	"github.com/tcc-uniftec-5s/internal/domain/entity"
 	"github.com/tcc-uniftec-5s/internal/interface/http/dto/request"
 	"schneider.vip/problem"
 )
@@ -80,10 +81,33 @@ func (tc team) CreateTeam() func(c echo.Context) error {
 		team, err := tc.createTeamUseCase.Execute(c.Request().Context(), createTeamReq.Name)
 		if err != nil {
 			log.Error().Interface("new team request", createTeamReq).Msg("/edition/teams error")
-			return c.NoContent(http.StatusInternalServerError) // todo handle error
+			return tc.handleErr(c, err)
 		}
 
 		log.Info().Msg("new team success")
 		return c.JSON(http.StatusOK, team)
 	}
+}
+
+func (tc team) handleErr(c echo.Context, err error) error {
+	var problemJSON *problem.Problem
+
+	status := http.StatusInternalServerError
+	detail := "internal server error"
+	title := "internal server error"
+
+	switch err {
+	case entity.ErrNoCurrentEditionFound:
+		status = http.StatusNotFound
+		title = "not found"
+		detail = "current edition not found"
+	}
+
+	problemJSON = problem.New(
+		problem.Status(status),
+		problem.Title(title),
+		problem.Detail(detail),
+	)
+
+	return c.JSON(status, problemJSON)
 }

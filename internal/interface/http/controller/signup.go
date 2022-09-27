@@ -87,8 +87,9 @@ func (sc signupController) handleErr(c echo.Context, err error) error {
 
 	switch err {
 	case entity.ErrCredentialAlreadyExists:
-		detail = "email already exists"
 		status = http.StatusConflict
+		title = "conflict"
+		detail = "email already exists"
 	}
 
 	problemJSON = problem.New(

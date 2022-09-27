@@ -38,7 +38,7 @@ func (f editionFactory) GetCurrent(ctx context.Context) (entity.EditionInterface
 	e := &entity.Edition{}
 	if err := f.editionRepository.GetCurrent(ctx, e); err != nil {
 		log.Info().Msg("error getting current edition")
-		return nil, err
+		return nil, entity.ErrNoCurrentEditionFound
 	}
 
 	return edition{

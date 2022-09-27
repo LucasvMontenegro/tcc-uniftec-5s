@@ -2,8 +2,11 @@ package entity
 
 import (
 	"context"
+	"errors"
 	"time"
 )
+
+var ErrNoCurrentEditionFound = errors.New("no current edition found")
 
 type Edition struct {
 	ID          *int64
