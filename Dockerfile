@@ -12,6 +12,6 @@ FROM gcr.io/distroless/base
 COPY --from=build-env --chown="nonroot:nonroot" /go/bin/service /
 USER nonroot
 
-COPY internal/infra/database/migrations internal/infra/database/migrations
+COPY internal/infra/database/migration internal/infra/database/migration
 
 CMD ["/service"]

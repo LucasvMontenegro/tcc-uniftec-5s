@@ -75,7 +75,7 @@ func Init(rootdir string) {
 	createTeamUseCase := usecase.NewCreateTeam(txHandler, teamFactory, editionFactory)
 
 	httpServer := server.New(
-		fmt.Sprintf(":%s", "3000"),
+		fmt.Sprintf(":%s", environment.Env.HttpPort),
 		"tcc-uniftec-5s",
 		environment.Env.JWTSigningKey,
 	)

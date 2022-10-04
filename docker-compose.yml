@@ -29,7 +29,7 @@ services:
       app-network:
         aliases:
           - "postgres.private"
-
+# todo: add volume
 networks:
   app-network:
 
