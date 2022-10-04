@@ -71,10 +71,7 @@ func (r credentialRepository) Identify(ctx context.Context, credential *entity.C
 		dbconn = ctxValue.tx
 	}
 
-	credentialDS := datastructure.Credential{
-		Email:    &credential.Email,
-		Password: &credential.Password,
-	}
+	credentialDS := datastructure.Credential{}
 
 	err := dbconn.
 		WithContext(ctx).
@@ -82,12 +79,12 @@ func (r credentialRepository) Identify(ctx context.Context, credential *entity.C
 		Where("email = ? and password = ?", credential.Email, credential.Password).
 		Preload("Account").
 		Preload("Account.User").
-		Find(&credentialDS).
+		First(&credentialDS).
 		Error
 
-	userDS := credentialDS.Account.User
-
 	if err == nil {
+		userDS := credentialDS.Account.User
+
 		credential.ID = credentialDS.ID
 		credential.Account = &entity.Account{
 			ID: credentialDS.Account.ID,
