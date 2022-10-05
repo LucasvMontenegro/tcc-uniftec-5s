@@ -1,5 +1,20 @@
 version: "3.9"
 services:
+  postgres:
+    image: postgres:12.3-alpine
+    container_name: tcc-uniftec-5s-postgres
+    hostname: postgres
+    ports:
+      - "0.0.0.0:5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=tcc-uniftec
+    networks:
+      app-network:
+        aliases:
+          - "postgres.private"
+
   tcc-uniftec-5s:
       build:
         context: .
@@ -16,20 +31,6 @@ services:
           aliases:
             - "tcc-uniftec-5s.private"
 
-  postgres:
-    image: postgres:12.3-alpine
-    container_name: tcc-uniftec-5s-postgres
-    hostname: postgres
-    ports:
-      - "0.0.0.0:5432:5432"
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=tcc-uniftec
-    networks:
-      app-network:
-        aliases:
-          - "postgres.private"
 networks:
   app-network:
 

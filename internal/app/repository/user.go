@@ -54,7 +54,7 @@ func (r userRepository) GetTeamlessUsers(ctx context.Context) ([]*entity.User, e
 	err := dbconn.
 		WithContext(ctx).
 		Table("team_user").
-		Raw("select * from users u where u.id not in (select tu.user_id from team_user tu where tu.team_id in (select t.id from teams t where t.edition_id = (select e.id  from editions e where e.status = 'ACTIVE')))").
+		Raw("select * from users u where u.is_admin is not true and u.id not in (select tu.user_id from team_user tu where tu.team_id in (select t.id from teams t where t.edition_id = (select e.id  from editions e where e.status = 'ACTIVE')))").
 		Scan(&teamlessUsersDS).
 		Error
 
