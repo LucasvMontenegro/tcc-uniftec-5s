@@ -76,7 +76,6 @@ func (ec edition) CreateEdition() func(c echo.Context) error {
 			EditionDTO: usecase.EditionDTO{
 				Name:        createEditionReq.Edition.Name,
 				Description: createEditionReq.Edition.Description,
-				Status:      createEditionReq.Edition.Status,
 				StartDate:   createEditionReq.Edition.StartDate,
 				EndDate:     createEditionReq.Edition.EndDate,
 			},

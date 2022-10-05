@@ -29,6 +29,6 @@ type EditionRepository interface {
 }
 
 type EditionFactoryInterface interface {
-	NewEdition(name string, description, status *string, startDate, endDate time.Time) EditionInterface
+	NewEdition(name string, description *string, startDate, endDate time.Time) EditionInterface
 	GetCurrent(ctx context.Context) (EditionInterface, error)
 }
