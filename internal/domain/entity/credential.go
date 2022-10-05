@@ -6,6 +6,7 @@ import (
 )
 
 var ErrCredentialAlreadyExists = errors.New("credential already exists")
+var ErrCredentialNotFound = errors.New("credential not found")
 
 type Credential struct {
 	ID       *int64

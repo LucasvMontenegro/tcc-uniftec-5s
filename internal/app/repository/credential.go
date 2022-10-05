@@ -82,6 +82,10 @@ func (r credentialRepository) Identify(ctx context.Context, credential *entity.C
 		First(&credentialDS).
 		Error
 
+	if err == gorm.ErrRecordNotFound {
+		err = entity.ErrCredentialNotFound
+	}
+
 	if err == nil {
 		userDS := credentialDS.Account.User
 
