@@ -6,7 +6,7 @@ services:
         dockerfile: ./Dockerfile
       container_name: tcc-uniftec-5s
       ports:
-      - "8888:8888"
+      - "80:80"
       env_file:
         - .env.compose
       depends_on:
@@ -30,7 +30,6 @@ services:
       app-network:
         aliases:
           - "postgres.private"
-# todo: add volume
 networks:
   app-network:
 
