@@ -25,7 +25,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=sample
+      - POSTGRES_DB=tcc-uniftec
     networks:
       app-network:
         aliases:
