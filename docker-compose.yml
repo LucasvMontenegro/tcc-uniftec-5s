@@ -2,6 +2,7 @@ version: "3.9"
 services:
   tcc-uniftec-5s:
       build:
+        context: ./dir
         dockerfile: ./Dockerfile
       container_name: tcc-uniftec-5s
       ports:
