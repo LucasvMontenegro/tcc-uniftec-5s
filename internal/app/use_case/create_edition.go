@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/rs/zerolog/log"
@@ -58,7 +59,14 @@ func (uc createEdition) Execute(ctx context.Context, dto CreateEditionDTO) error
 	}
 
 	edition := uc.editionFactory.NewEdition(dto.EditionDTO.Name, dto.EditionDTO.Description, dto.EditionDTO.StartDate, dto.EditionDTO.EndDate)
-	if err := edition.Create(ctx); err != nil {
+	current, err := uc.editionFactory.GetCurrent(ctx)
+	if err != nil {
+		if !errors.Is(err, entity.ErrNoCurrentEditionFound) {
+			return err
+		}
+	}
+
+	if err := edition.Create(ctx, current); err != nil {
 		log.Info().Msg("rolling back tx")
 		if txerr := uc.txHandler.Rollback(ctx); txerr != nil {
 			return txerr

@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"time"
 
 	"github.com/rs/zerolog/log"
 	"github.com/tcc-uniftec-5s/internal/domain/entity"
@@ -16,14 +17,14 @@ func (s edition) Self() *entity.Edition {
 	return s.editionEntity
 }
 
-func (s edition) Create(ctx context.Context) error {
+func (s edition) Create(ctx context.Context, current entity.EditionInterface) error {
 	log.Info().Msg("creating edition")
 
 	if err := s.validateDates(ctx); err != nil {
 		return err
 	}
 
-	if err := s.validateStatus(ctx); err != nil {
+	if err := s.validateStatus(ctx, current); err != nil {
 		return err
 	}
 
@@ -47,11 +48,18 @@ func (s edition) validateDates(ctx context.Context) error {
 	return nil
 }
 
-func (s edition) validateStatus(ctx context.Context) error {
+func (s edition) validateStatus(ctx context.Context, current entity.EditionInterface) error {
 	log.Info().Msg("validating status")
 
 	if s.editionEntity.Status == nil {
 		status := "WAITING"
+		s.editionEntity.Status = &status
+	}
+
+	if current == nil &&
+		(s.editionEntity.StartDate.Equal(time.Now()) ||
+			s.editionEntity.StartDate.Before(time.Now())) {
+		status := "ACTIVE"
 		s.editionEntity.Status = &status
 	}
 

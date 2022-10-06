@@ -21,7 +21,7 @@ type Edition struct {
 
 type EditionInterface interface {
 	Self() *Edition
-	Create(ctx context.Context) error
+	Create(ctx context.Context, edition EditionInterface) error
 }
 
 type EditionRepository interface {
