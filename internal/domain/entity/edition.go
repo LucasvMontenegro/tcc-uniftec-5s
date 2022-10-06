@@ -7,6 +7,7 @@ import (
 )
 
 var ErrNoCurrentEditionFound = errors.New("no current edition found")
+var ErrInvalidEditionDate = errors.New("start date must be before end date")
 
 type Edition struct {
 	ID          *int64

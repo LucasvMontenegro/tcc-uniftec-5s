@@ -2,13 +2,10 @@ package service
 
 import (
 	"context"
-	"errors"
 
 	"github.com/rs/zerolog/log"
 	"github.com/tcc-uniftec-5s/internal/domain/entity"
 )
-
-var ErrInvalidEditionDate = errors.New("start date must be before end date")
 
 type edition struct {
 	editionEntity     *entity.Edition
@@ -43,7 +40,7 @@ func (s edition) validateDates(ctx context.Context) error {
 
 	if s.editionEntity.EndDate.Before(s.editionEntity.StartDate) {
 		log.Warn().Msg("start date must be before end date")
-		return ErrInvalidEditionDate
+		return entity.ErrInvalidEditionDate
 	}
 
 	return nil

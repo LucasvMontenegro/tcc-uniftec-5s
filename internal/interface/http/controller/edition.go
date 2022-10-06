@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
 	usecase "github.com/tcc-uniftec-5s/internal/app/use_case"
+	"github.com/tcc-uniftec-5s/internal/domain/entity"
 	"github.com/tcc-uniftec-5s/internal/interface/http/dto/request"
 	"schneider.vip/problem"
 )
@@ -88,10 +89,33 @@ func (ec edition) CreateEdition() func(c echo.Context) error {
 		err := ec.createEditionUseCase.Execute(c.Request().Context(), dto)
 		if err != nil {
 			log.Error().Interface("new edition request", createEditionReq).Msg("/editions error")
-			return c.NoContent(http.StatusInternalServerError) // todo handle error
+			return ec.handleErr(c, err)
 		}
 
 		log.Info().Msg("new edition success")
 		return c.NoContent(http.StatusNoContent)
 	}
+}
+
+func (ec edition) handleErr(c echo.Context, err error) error {
+	var problemJSON *problem.Problem
+
+	status := http.StatusInternalServerError
+	detail := "internal server error"
+	title := "internal server error"
+
+	switch err {
+	case entity.ErrInvalidEditionDate:
+		status = http.StatusBadRequest
+		title = "bad request"
+		detail = entity.ErrInvalidEditionDate.Error()
+	}
+
+	problemJSON = problem.New(
+		problem.Status(status),
+		problem.Title(title),
+		problem.Detail(detail),
+	)
+
+	return c.JSON(status, problemJSON)
 }
