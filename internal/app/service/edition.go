@@ -38,7 +38,8 @@ func (s edition) Create(ctx context.Context) error {
 func (s edition) validateDates(ctx context.Context) error {
 	log.Info().Msg("validating dates")
 
-	if s.editionEntity.EndDate.Before(s.editionEntity.StartDate) {
+	if s.editionEntity.EndDate.Before(s.editionEntity.StartDate) ||
+		s.editionEntity.EndDate.Equal(s.editionEntity.StartDate) {
 		log.Warn().Msg("start date must be before end date")
 		return entity.ErrInvalidEditionDate
 	}
