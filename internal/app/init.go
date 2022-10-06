@@ -83,7 +83,7 @@ func Init(rootdir string) {
 	accessValidator := controller.NewAccessValidator()
 
 	controllers := []controller.Router{
-		controller.NewSignupController(httpServer.Instance, signupUseCase),
+		controller.NewSignupController(httpServer.Instance, httpServer.Restricted, accessValidator, signupUseCase),
 		controller.NewLoginController(httpServer.Instance, loginUseCase),
 		controller.NewResetPasswordController(httpServer.Instance, resetPasswordUseCase),
 		controller.NewEdition(httpServer.Instance, httpServer.Restricted, accessValidator, createEditionUseCase),

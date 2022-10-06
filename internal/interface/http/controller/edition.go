@@ -39,12 +39,17 @@ type edition struct {
 }
 
 func (c edition) RegisterRoutes() {
-	c.Instance.POST("/editions", c.CreateEdition())
+	c.restricted.POST("/editions", c.CreateEdition())
 }
 
 func (ec edition) CreateEdition() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		log.Info().Msg("/editions")
+
+		if err := ec.accessValidator.Restrict(c); err != nil {
+			c.Error(err)
+			return nil
+		}
 
 		var createEditionReq request.CreateEdition
 

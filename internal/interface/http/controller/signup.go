@@ -14,11 +14,15 @@ import (
 
 func NewSignupController(
 	instance *echo.Echo,
+	restricted *echo.Group,
+	accessValidator AccessValidator,
 	signupUseCase usecase.Signup) SignupController {
 
-	return &signupController{
-		Instance:      instance,
-		signupUseCase: signupUseCase,
+	return &signup{
+		Instance:        instance,
+		restricted:      restricted,
+		accessValidator: accessValidator,
+		signupUseCase:   signupUseCase,
 	}
 }
 
@@ -27,18 +31,25 @@ type SignupController interface {
 	Signup() func(c echo.Context) error
 }
 
-type signupController struct {
-	Instance      *echo.Echo
-	signupUseCase usecase.Signup
+type signup struct {
+	Instance        *echo.Echo
+	restricted      *echo.Group
+	accessValidator AccessValidator
+	signupUseCase   usecase.Signup
 }
 
-func (c signupController) RegisterRoutes() {
-	c.Instance.POST("/signup", c.Signup())
+func (c signup) RegisterRoutes() {
+	c.restricted.POST("/signup", c.Signup())
 }
 
-func (sc signupController) Signup() func(c echo.Context) error {
+func (sc signup) Signup() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		log.Info().Msg("/signup")
+
+		if err := sc.accessValidator.Restrict(c); err != nil {
+			c.Error(err)
+			return nil
+		}
 
 		var signupReq request.Signup
 
@@ -78,7 +89,7 @@ func (sc signupController) Signup() func(c echo.Context) error {
 	}
 }
 
-func (sc signupController) handleErr(c echo.Context, err error) error {
+func (sc signup) handleErr(c echo.Context, err error) error {
 	var problemJSON *problem.Problem
 
 	status := http.StatusInternalServerError
