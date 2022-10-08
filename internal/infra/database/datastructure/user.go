@@ -7,6 +7,7 @@ import (
 type User struct {
 	ID        *int64 `gorm:"primarykey"`
 	AccountID *int64
+	Account   *Account
 	Name      *string
 	Status    *string
 	IsAdmin   *bool

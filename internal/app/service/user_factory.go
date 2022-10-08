@@ -47,3 +47,22 @@ func (f UserFactory) GetTeamlessUsers(ctx context.Context) ([]entity.UserInterfa
 
 	return uis, nil
 }
+
+func (f UserFactory) ListUsers(ctx context.Context) ([]entity.UserInterface, error) {
+	users, err := f.userRepository.ListUsers(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	uis := make([]entity.UserInterface, 0)
+	for _, user := range users {
+		impl := UserImpl{
+			userEntity:     user,
+			userRepository: f.userRepository,
+		}
+
+		uis = append(uis, impl)
+	}
+
+	return uis, nil
+}

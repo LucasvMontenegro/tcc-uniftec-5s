@@ -6,6 +6,7 @@ type Account struct {
 	ID         *int64
 	User       *User
 	Credential *Credential
+	Email      *string
 }
 
 type AccountInterface interface {

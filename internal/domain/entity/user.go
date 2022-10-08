@@ -18,6 +18,7 @@ type User struct {
 
 type UserFactoryInterface interface {
 	NewUser(account *Account, name string) UserInterface
+	ListUsers(ctx context.Context) ([]UserInterface, error)
 	GetTeamlessUsers(ctx context.Context) ([]UserInterface, error)
 }
 
@@ -32,6 +33,7 @@ type UserInterface interface {
 type UserRepository interface {
 	Save(ctx context.Context, user *User) error
 	GetTeamlessUsers(ctx context.Context) ([]*User, error)
+	ListUsers(ctx context.Context) ([]*User, error)
 
 	// Update(ctx context.Context, UserEntity) UserEntity
 }
