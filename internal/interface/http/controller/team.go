@@ -9,6 +9,7 @@ import (
 	usecase "github.com/tcc-uniftec-5s/internal/app/use_case"
 	"github.com/tcc-uniftec-5s/internal/domain/entity"
 	"github.com/tcc-uniftec-5s/internal/interface/http/dto/request"
+	"github.com/tcc-uniftec-5s/internal/interface/http/dto/response"
 	"schneider.vip/problem"
 )
 
@@ -84,8 +85,9 @@ func (tc team) CreateTeam() func(c echo.Context) error {
 			return tc.handleErr(c, err)
 		}
 
+		response := response.NewCreatedTeam(*team)
 		log.Info().Msg("new team success")
-		return c.JSON(http.StatusOK, team)
+		return c.JSON(http.StatusOK, response)
 	}
 }
 

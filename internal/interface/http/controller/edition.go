@@ -8,6 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 	usecase "github.com/tcc-uniftec-5s/internal/app/use_case"
 	"github.com/tcc-uniftec-5s/internal/domain/entity"
+	"github.com/tcc-uniftec-5s/internal/infra/utils"
 	"github.com/tcc-uniftec-5s/internal/interface/http/dto/request"
 	"schneider.vip/problem"
 )
@@ -28,7 +29,6 @@ func NewEdition(
 
 type Edition interface {
 	Router
-	CreateEdition() func(c echo.Context) error
 }
 
 type edition struct {
@@ -39,10 +39,11 @@ type edition struct {
 }
 
 func (c edition) RegisterRoutes() {
-	c.restricted.POST("/editions", c.CreateEdition())
+	c.restricted.POST("/editions", c.createEdition())
+	c.Instance.GET("/editions", c.getEdition())
 }
 
-func (ec edition) CreateEdition() func(c echo.Context) error {
+func (ec edition) createEdition() func(c echo.Context) error {
 	return func(c echo.Context) error {
 		log.Info().Msg("/editions")
 
@@ -78,12 +79,24 @@ func (ec edition) CreateEdition() func(c echo.Context) error {
 			return c.JSON(status, prob)
 		}
 
+		parsedStartDate, err := utils.ParseDate(createEditionReq.Edition.StartDate)
+		if err != nil {
+			log.Error().Interface("new edition request", createEditionReq).Msg("invalid date format")
+			return ec.handleErr(c, err)
+		}
+
+		parsedEndDate, err := utils.ParseDate(createEditionReq.Edition.EndDate)
+		if err != nil {
+			log.Error().Interface("new edition request", createEditionReq).Msg("invalid date format")
+			return ec.handleErr(c, err)
+		}
+
 		dto := usecase.CreateEditionDTO{
 			EditionDTO: usecase.EditionDTO{
 				Name:        createEditionReq.Edition.Name,
 				Description: createEditionReq.Edition.Description,
-				StartDate:   createEditionReq.Edition.StartDate,
-				EndDate:     createEditionReq.Edition.EndDate,
+				StartDate:   parsedStartDate,
+				EndDate:     parsedEndDate,
 			},
 			PrizeDTO: usecase.PrizeDTO{
 				Name:        createEditionReq.Prize.Name,
@@ -91,7 +104,7 @@ func (ec edition) CreateEdition() func(c echo.Context) error {
 			},
 		}
 
-		err := ec.createEditionUseCase.Execute(c.Request().Context(), dto)
+		err = ec.createEditionUseCase.Execute(c.Request().Context(), dto)
 		if err != nil {
 			log.Error().Interface("new edition request", createEditionReq).Msg("/editions error")
 			return ec.handleErr(c, err)
@@ -99,6 +112,30 @@ func (ec edition) CreateEdition() func(c echo.Context) error {
 
 		log.Info().Msg("new edition success")
 		return c.NoContent(http.StatusNoContent)
+	}
+}
+
+func (ec edition) getEdition() func(c echo.Context) error {
+	return func(c echo.Context) error {
+		log.Info().Msg("/editions")
+
+		log.Info().Msg("new edition success")
+
+		response := struct {
+			Name        string
+			Description string
+			Status      string
+			StartDate   string
+			EndDate     string
+		}{
+			Name:        "Primera Edicao",
+			Description: "Primeira edicao do programa de qualidade 5s",
+			Status:      "ACTIVE",
+			StartDate:   "2022-10-01",
+			EndDate:     "2022-10-31",
+		}
+
+		return c.JSON(http.StatusOK, response)
 	}
 }
 
@@ -114,6 +151,10 @@ func (ec edition) handleErr(c echo.Context, err error) error {
 		status = http.StatusBadRequest
 		title = "bad request"
 		detail = entity.ErrInvalidEditionDate.Error()
+	case utils.ERR_INVALID_DATE_FORMAT:
+		status = http.StatusBadRequest
+		title = "bad request"
+		detail = utils.ERR_INVALID_DATE_FORMAT.Error()
 	}
 
 	problemJSON = problem.New(
