@@ -40,11 +40,3 @@ type CreatedTeam struct {
 	Name    *string  `json:"name"`
 	Edition *Edition `json:"edition,omitempty"`
 }
-
-type Edition struct {
-	ID        *int64  `json:"id"`
-	Name      *string `json:"name"`
-	Status    *string `json:"status"`
-	StartDate *string `json:"start_date"`
-	EndDate   *string `json:"end_date"`
-}

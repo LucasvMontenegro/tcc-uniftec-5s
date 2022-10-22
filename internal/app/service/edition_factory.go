@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/rs/zerolog/log"
@@ -26,7 +27,7 @@ func (f editionFactory) NewEdition(name string, description *string, startDate t
 		EndDate:     endDate,
 	}
 
-	return edition{
+	return editionImpl{
 		editionEntity:     &entity,
 		editionRepository: f.editionRepository,
 	}
@@ -40,8 +41,36 @@ func (f editionFactory) GetCurrent(ctx context.Context) (entity.EditionInterface
 		return nil, entity.ErrNoCurrentEditionFound
 	}
 
-	return edition{
+	return editionImpl{
 		editionEntity:     e,
 		editionRepository: f.editionRepository,
 	}, nil
+}
+
+func (f editionFactory) ListEditionsByStatus(ctx context.Context, status string) ([]entity.EditionInterface, error) {
+	var editions []entity.EditionInterface
+
+	if strings.ToLower(status) == "active" {
+		e := &entity.Edition{}
+		if err := f.editionRepository.GetCurrent(ctx, e); err != nil {
+			log.Info().Msg("error getting current edition")
+			return nil, entity.ErrNoCurrentEditionFound
+		}
+
+		editions = append(editions, editionImpl{
+			editionEntity:     e,
+			editionRepository: f.editionRepository,
+		})
+
+	} else {
+		leditions, _ := f.editionRepository.ListEditions(ctx)
+		for _, edition := range leditions {
+			editions = append(editions, editionImpl{
+				editionEntity:     edition,
+				editionRepository: f.editionRepository,
+			})
+		}
+	}
+
+	return editions, nil
 }

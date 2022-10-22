@@ -10,6 +10,7 @@ import (
 	"github.com/tcc-uniftec-5s/internal/domain/entity"
 	"github.com/tcc-uniftec-5s/internal/infra/utils"
 	"github.com/tcc-uniftec-5s/internal/interface/http/dto/request"
+	"github.com/tcc-uniftec-5s/internal/interface/http/dto/response"
 	"schneider.vip/problem"
 )
 
@@ -17,13 +18,15 @@ func NewEdition(
 	instance *echo.Echo,
 	restricted *echo.Group,
 	accessValidator AccessValidator,
-	createEditionUseCase usecase.CreateEdition) Edition {
+	createEditionUseCase usecase.CreateEdition,
+	listEditionsUseCase usecase.ListEditions) Edition {
 
 	return &edition{
 		Instance:             instance,
 		restricted:           restricted,
 		accessValidator:      accessValidator,
 		createEditionUseCase: createEditionUseCase,
+		listEditionsUseCase:  listEditionsUseCase,
 	}
 }
 
@@ -36,11 +39,12 @@ type edition struct {
 	restricted           *echo.Group
 	accessValidator      AccessValidator
 	createEditionUseCase usecase.CreateEdition
+	listEditionsUseCase  usecase.ListEditions
 }
 
 func (c edition) RegisterRoutes() {
 	c.restricted.POST("/editions", c.createEdition())
-	c.Instance.GET("/editions", c.getEdition())
+	c.Instance.GET("/editions", c.listEditions())
 }
 
 func (ec edition) createEdition() func(c echo.Context) error {
@@ -115,26 +119,19 @@ func (ec edition) createEdition() func(c echo.Context) error {
 	}
 }
 
-func (ec edition) getEdition() func(c echo.Context) error {
+func (ec edition) listEditions() func(c echo.Context) error {
 	return func(c echo.Context) error {
-		log.Info().Msg("/editions")
+		log.Info().Msg("GET /editions")
 
-		log.Info().Msg("new edition success")
+		status := c.QueryParam("status")
 
-		response := struct {
-			Name        string
-			Description string
-			Status      string
-			StartDate   string
-			EndDate     string
-		}{
-			Name:        "Primera Edicao",
-			Description: "Primeira edicao do programa de qualidade 5s",
-			Status:      "ACTIVE",
-			StartDate:   "2022-10-01",
-			EndDate:     "2022-10-31",
+		editions, err := ec.listEditionsUseCase.Execute(c.Request().Context(), status)
+		if err != nil {
+			log.Error().Msg("GET /editions")
+			return ec.handleErr(c, err)
 		}
 
+		response := response.NewListedEditions(editions)
 		return c.JSON(http.StatusOK, response)
 	}
 }

@@ -71,6 +71,7 @@ func Init(rootdir string) {
 	loginUseCase := usecase.NewLogin(txHandler, credentialFactory, sessionFactory)
 	resetPasswordUseCase := usecase.NewResetPassword(txHandler, credentialFactory)
 	createEditionUseCase := usecase.NewCreateEdition(txHandler, editionFactory, prizeFactory)
+	listEditionsUseCase := usecase.NewListEditions(editionFactory)
 	listTeamlessUsersUseCase := usecase.NewListTeamlessUsers(txHandler, userFactory)
 	listUsersUseCase := usecase.NewListUsers(txHandler, userFactory)
 	createTeamUseCase := usecase.NewCreateTeam(txHandler, teamFactory, editionFactory)
@@ -88,7 +89,7 @@ func Init(rootdir string) {
 		controller.NewSignupController(httpServer.Instance, httpServer.Restricted, accessValidator, signupUseCase),
 		controller.NewLoginController(httpServer.Instance, loginUseCase),
 		controller.NewResetPasswordController(httpServer.Instance, resetPasswordUseCase),
-		controller.NewEdition(httpServer.Instance, httpServer.Restricted, accessValidator, createEditionUseCase),
+		controller.NewEdition(httpServer.Instance, httpServer.Restricted, accessValidator, createEditionUseCase, listEditionsUseCase),
 		controller.NewUser(httpServer.Instance, listTeamlessUsersUseCase, listUsersUseCase),
 		controller.NewTeam(httpServer.Instance, httpServer.Restricted, accessValidator, createTeamUseCase, listTeamsUseCase),
 	}

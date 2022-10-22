@@ -8,16 +8,16 @@ import (
 	"github.com/tcc-uniftec-5s/internal/domain/entity"
 )
 
-type edition struct {
+type editionImpl struct {
 	editionEntity     *entity.Edition
 	editionRepository entity.EditionRepository
 }
 
-func (s edition) Self() *entity.Edition {
+func (s editionImpl) Self() *entity.Edition {
 	return s.editionEntity
 }
 
-func (s edition) Create(ctx context.Context, current entity.EditionInterface) error {
+func (s editionImpl) Create(ctx context.Context, current entity.EditionInterface) error {
 	log.Info().Msg("creating edition")
 
 	if err := s.validateDates(ctx); err != nil {
@@ -36,7 +36,7 @@ func (s edition) Create(ctx context.Context, current entity.EditionInterface) er
 	return nil
 }
 
-func (s edition) validateDates(ctx context.Context) error {
+func (s editionImpl) validateDates(ctx context.Context) error {
 	log.Info().Msg("validating dates")
 
 	if s.editionEntity.EndDate.Before(s.editionEntity.StartDate) ||
@@ -48,7 +48,7 @@ func (s edition) validateDates(ctx context.Context) error {
 	return nil
 }
 
-func (s edition) validateStatus(ctx context.Context, current entity.EditionInterface) error {
+func (s editionImpl) validateStatus(ctx context.Context, current entity.EditionInterface) error {
 	log.Info().Msg("validating status")
 
 	if s.editionEntity.Status == nil {

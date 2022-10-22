@@ -70,3 +70,34 @@ func (r edition) GetCurrent(ctx context.Context, edition *entity.Edition) error 
 
 	return err
 }
+
+func (r edition) ListEditions(ctx context.Context) ([]*entity.Edition, error) {
+	dbconn := r.db
+	ctxValue, ok := ctx.Value(CtxKey{}).(CtxValue)
+	if ok {
+		dbconn = ctxValue.tx
+	}
+
+	editionDS := []datastructure.Edition{}
+	err := dbconn.
+		WithContext(ctx).
+		Table("editions").
+		Find(&editionDS).
+		Error
+
+	editions := []*entity.Edition{}
+	for _, edition := range editionDS {
+		t := entity.Edition{
+			ID:          edition.ID,
+			Name:        *edition.Name,
+			Description: edition.Description,
+			StartDate:   *edition.StartDate,
+			EndDate:     *edition.EndDate,
+			Status:      edition.Status,
+		}
+
+		editions = append(editions, &t)
+	}
+
+	return editions, err
+}
