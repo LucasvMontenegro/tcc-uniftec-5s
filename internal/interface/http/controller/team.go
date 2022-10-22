@@ -17,35 +17,38 @@ func NewTeam(
 	instance *echo.Echo,
 	restricted *echo.Group,
 	accessValidator AccessValidator,
-	createTeamUseCase usecase.CreateTeam) Team {
+	createTeamUseCase usecase.CreateTeam,
+	listTeamsUseCase usecase.ListTeams) Team {
 
 	return &team{
-		Instance:          instance,
+		instance:          instance,
 		restricted:        restricted,
 		accessValidator:   accessValidator,
 		createTeamUseCase: createTeamUseCase,
+		listTeamsUseCase:  listTeamsUseCase,
 	}
 }
 
 type Team interface {
 	Router
-	CreateTeam() func(c echo.Context) error
 }
 
 type team struct {
-	Instance          *echo.Echo
+	instance          *echo.Echo
 	restricted        *echo.Group
 	accessValidator   AccessValidator
 	createTeamUseCase usecase.CreateTeam
+	listTeamsUseCase  usecase.ListTeams
 }
 
 func (c team) RegisterRoutes() {
 	c.restricted.POST("/edition/teams", c.CreateTeam())
+	c.instance.GET("/edition/teams", c.listTeams())
 }
 
 func (tc team) CreateTeam() func(c echo.Context) error {
 	return func(c echo.Context) error {
-		log.Info().Msg("/edition/teams")
+		log.Info().Msg("POST /edition/teams")
 
 		if err := tc.accessValidator.Restrict(c); err != nil {
 			c.Error(err)
@@ -87,6 +90,21 @@ func (tc team) CreateTeam() func(c echo.Context) error {
 
 		response := response.NewCreatedTeam(*team)
 		log.Info().Msg("new team success")
+		return c.JSON(http.StatusOK, response)
+	}
+}
+
+func (tc team) listTeams() func(c echo.Context) error {
+	return func(c echo.Context) error {
+		log.Info().Msg("GET /edition/teams")
+
+		teams, err := tc.listTeamsUseCase.Execute(c.Request().Context())
+		if err != nil {
+			log.Error().Msg("GET /edition/teams error")
+			return tc.handleErr(c, err)
+		}
+
+		response := response.NewListedTeams(teams)
 		return c.JSON(http.StatusOK, response)
 	}
 }

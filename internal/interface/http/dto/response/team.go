@@ -12,7 +12,7 @@ func NewCreatedTeam(team entity.Team) CreatedTeam {
 	return CreatedTeam{
 		ID:   team.ID,
 		Name: &team.Name,
-		Edition: Edition{
+		Edition: &Edition{
 			ID:        team.Edition.ID,
 			Name:      &team.Edition.Name,
 			Status:    team.Edition.Status,
@@ -23,10 +23,22 @@ func NewCreatedTeam(team entity.Team) CreatedTeam {
 
 }
 
+func NewListedTeams(teams []entity.Team) []CreatedTeam {
+	var response []CreatedTeam
+	for _, team := range teams {
+		response = append(response, CreatedTeam{
+			ID:   team.ID,
+			Name: &team.Name,
+		})
+	}
+
+	return response
+}
+
 type CreatedTeam struct {
-	ID      *int64  `json:"id"`
-	Name    *string `json:"name"`
-	Edition Edition `json:"edition"`
+	ID      *int64   `json:"id"`
+	Name    *string  `json:"name"`
+	Edition *Edition `json:"edition,omitempty"`
 }
 
 type Edition struct {

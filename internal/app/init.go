@@ -74,6 +74,7 @@ func Init(rootdir string) {
 	listTeamlessUsersUseCase := usecase.NewListTeamlessUsers(txHandler, userFactory)
 	listUsersUseCase := usecase.NewListUsers(txHandler, userFactory)
 	createTeamUseCase := usecase.NewCreateTeam(txHandler, teamFactory, editionFactory)
+	listTeamsUseCase := usecase.NewListTeams(teamFactory, editionFactory)
 
 	httpServer := server.New(
 		fmt.Sprintf(":%s", environment.Env.HttpPort),
@@ -89,7 +90,7 @@ func Init(rootdir string) {
 		controller.NewResetPasswordController(httpServer.Instance, resetPasswordUseCase),
 		controller.NewEdition(httpServer.Instance, httpServer.Restricted, accessValidator, createEditionUseCase),
 		controller.NewUser(httpServer.Instance, listTeamlessUsersUseCase, listUsersUseCase),
-		controller.NewTeam(httpServer.Instance, httpServer.Restricted, accessValidator, createTeamUseCase),
+		controller.NewTeam(httpServer.Instance, httpServer.Restricted, accessValidator, createTeamUseCase, listTeamsUseCase),
 	}
 
 	registerControllersRoutes(controllers)

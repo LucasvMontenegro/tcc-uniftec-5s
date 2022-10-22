@@ -39,3 +39,31 @@ func (r team) Save(ctx context.Context, team *entity.Team, edition *entity.Editi
 	team.ID = teamDS.ID
 	return err
 }
+
+func (r team) ListTeamsByEdition(ctx context.Context, edition *entity.Edition) ([]*entity.Team, error) {
+	dbconn := r.db
+	ctxValue, ok := ctx.Value(CtxKey{}).(CtxValue)
+	if ok {
+		dbconn = ctxValue.tx
+	}
+
+	teamDS := []datastructure.Team{}
+	err := dbconn.
+		WithContext(ctx).
+		Table("teams").
+		Where("edition_id = ?", edition.ID).
+		Find(&teamDS).
+		Error
+
+	teams := []*entity.Team{}
+	for _, team := range teamDS {
+		t := entity.Team{
+			ID:   team.ID,
+			Name: team.Name,
+		}
+
+		teams = append(teams, &t)
+	}
+
+	return teams, err
+}

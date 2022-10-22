@@ -10,16 +10,16 @@ import (
 
 var ErrInvalidTeamDate = errors.New("start date must be before end date")
 
-type team struct {
+type teamImpl struct {
 	teamEntity     *entity.Team
 	teamRepository entity.TeamRepository
 }
 
-func (s team) Self() *entity.Team {
+func (s teamImpl) Self() *entity.Team {
 	return s.teamEntity
 }
 
-func (s team) Create(ctx context.Context, edition *entity.Edition) error {
+func (s teamImpl) Create(ctx context.Context, edition *entity.Edition) error {
 	log.Info().Msg("creating team")
 
 	if err := s.teamRepository.Save(ctx, s.Self(), edition); err != nil {
