@@ -26,9 +26,10 @@ func NewCreatedTeam(team entity.Team) CreatedTeam {
 func NewListedTeams(teams []entity.Team) []CreatedTeam {
 	var response []CreatedTeam
 	for _, team := range teams {
+		tname := team.Name
 		response = append(response, CreatedTeam{
 			ID:   team.ID,
-			Name: &team.Name,
+			Name: &tname,
 		})
 	}
 
