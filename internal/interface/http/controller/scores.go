@@ -4,9 +4,11 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
 	usecase "github.com/tcc-uniftec-5s/internal/app/use_case"
+	"github.com/tcc-uniftec-5s/internal/interface/http/dto/request"
 	"github.com/tcc-uniftec-5s/internal/interface/http/dto/response"
 	"schneider.vip/problem"
 )
@@ -38,6 +40,7 @@ type score struct {
 
 func (c score) RegisterRoutes() {
 	c.Instance.GET("/teams/:teamid/scores", c.listScores())
+	c.restricted.POST("/teams/:teamid/scores", c.score())
 }
 
 func (sc score) listScores() func(c echo.Context) error {
@@ -53,6 +56,53 @@ func (sc score) listScores() func(c echo.Context) error {
 
 		response := response.NewListedScores(scores)
 		return c.JSON(http.StatusOK, response)
+	}
+}
+
+func (sc score) score() func(c echo.Context) error {
+	return func(c echo.Context) error {
+		log.Info().Msg("POST /teams/:teamid/scores")
+		teamID, _ := strconv.ParseInt(c.Param("teamid"), 10, 64)
+		log.Info().Msgf("POST /teams/%v/scores", teamID)
+
+		if err := sc.accessValidator.Restrict(c); err != nil {
+			c.Error(err)
+			return nil
+		}
+
+		var req request.Scores
+
+		if err := c.Bind(&req); err != nil {
+			log.Info().Interface("new edition request", req).Msg("deserialization error")
+			status := http.StatusBadRequest
+			prob := problem.New(
+				problem.Title("REQUEST_DESERIALIZATION_ERROR"),
+				problem.Detail("Bad Request"),
+				problem.Status(status),
+			)
+
+			return c.JSON(status, prob)
+		}
+
+		validate := validator.New()
+		if err := validate.Struct(req); err != nil {
+			log.Error().Interface("score request", req).Msg("/teams/id/scores validation error")
+			status := http.StatusBadRequest
+			prob := problem.New(
+				problem.Title("REQUEST_VALIDATION_ERROR"),
+				problem.Detail("Bad Request"),
+				problem.Status(status),
+			)
+
+			return c.JSON(status, prob)
+		}
+		// err := sc.scoreUseCase.Execute(c.Request().Context(), teamID)
+		// if err != nil {
+		// 	log.Error().Msg("POST /teams/:teamid/scores")
+		// 	return sc.handleErr(c, err)
+		// }
+
+		return c.NoContent(http.StatusNoContent)
 	}
 }
 
