@@ -44,15 +44,17 @@ func (r credentialRepository) Save(ctx context.Context, credential *entity.Crede
 
 	if err != nil {
 		var pgErr *pgconn.PgError
-		errors.As(err, &pgErr)
-		if pgErr.Code == database.ErrCodes[database.ErrUniqueViolation] {
+		ok := errors.As(err, &pgErr)
+		if ok && pgErr.Code == database.ErrCodes[database.ErrUniqueViolation] {
 			return entity.ErrCredentialAlreadyExists
 		}
+
+		return err
 	} else {
 		credential.ID = credentialDS.ID
 	}
 
-	return err
+	return nil
 }
 
 func (r credentialRepository) SetAccount(ctx context.Context, credential *entity.Credential) error {
