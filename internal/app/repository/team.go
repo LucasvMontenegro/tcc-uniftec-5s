@@ -67,3 +67,26 @@ func (r team) ListTeamsByEdition(ctx context.Context, edition *entity.Edition) (
 
 	return teams, err
 }
+
+func (r team) GetByID(ctx context.Context, team *entity.Team) error {
+	dbconn := r.db
+	ctxValue, ok := ctx.Value(CtxKey{}).(CtxValue)
+	if ok {
+		dbconn = ctxValue.tx
+	}
+
+	teamDS := datastructure.Team{}
+	err := dbconn.
+		WithContext(ctx).
+		Table("teams").
+		Where("id = ?", team.ID).
+		First(&teamDS).
+		Error
+
+	if err == nil {
+		team.ID = teamDS.ID
+		team.Name = teamDS.Name
+	}
+
+	return err
+}

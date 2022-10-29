@@ -13,7 +13,7 @@ func NewListedScores(scores []entity.Score) []*Score {
 	for _, score := range scores {
 		response = append(response, &Score{
 			ID:        score.ID,
-			FiveSName: &score.FiveS.Name,
+			FiveSName: score.FiveS.Name,
 			TeamName:  &score.Team.Name,
 			Score:     score.Score,
 		})
@@ -26,5 +26,5 @@ type Score struct {
 	ID        *int64 `json:"id"`
 	FiveSName *string
 	TeamName  *string
-	Score     *float64
+	Score     *int
 }

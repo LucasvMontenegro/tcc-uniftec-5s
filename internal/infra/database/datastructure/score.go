@@ -6,7 +6,7 @@ type Score struct {
 	FiveS   *FiveS
 	TeamID  *int64
 	Team    *Team
-	Score   *float64
+	Score   *int
 }
 
 type FiveS struct {

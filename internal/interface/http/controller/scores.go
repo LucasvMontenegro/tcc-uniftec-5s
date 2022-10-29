@@ -17,13 +17,15 @@ func NewScore(
 	instance *echo.Echo,
 	restricted *echo.Group,
 	accessValidator AccessValidator,
-	listScoresUseCase usecase.ListScores) Score {
+	listScoresUseCase usecase.ListScores,
+	scoreUseCase usecase.Score) Score {
 
 	return &score{
 		Instance:          instance,
 		restricted:        restricted,
 		accessValidator:   accessValidator,
 		listScoresUseCase: listScoresUseCase,
+		scoreUseCase:      scoreUseCase,
 	}
 }
 
@@ -36,6 +38,7 @@ type score struct {
 	restricted        *echo.Group
 	accessValidator   AccessValidator
 	listScoresUseCase usecase.ListScores
+	scoreUseCase      usecase.Score
 }
 
 func (c score) RegisterRoutes() {
@@ -96,11 +99,35 @@ func (sc score) score() func(c echo.Context) error {
 
 			return c.JSON(status, prob)
 		}
-		// err := sc.scoreUseCase.Execute(c.Request().Context(), teamID)
-		// if err != nil {
-		// 	log.Error().Msg("POST /teams/:teamid/scores")
-		// 	return sc.handleErr(c, err)
-		// }
+
+		dto := []usecase.ScoreDTO{
+			{
+				FiveSName: "SEIKETSU",
+				Score:     req.Seiketsu,
+			},
+			{
+				FiveSName: "SEIRI",
+				Score:     req.Seiri,
+			},
+			{
+				FiveSName: "SEISO",
+				Score:     req.Seiso,
+			},
+			{
+				FiveSName: "SEITON",
+				Score:     req.Seiton,
+			},
+			{
+				FiveSName: "SHITSUKE",
+				Score:     req.Shitsuke,
+			},
+		}
+
+		err := sc.scoreUseCase.Execute(c.Request().Context(), teamID, dto)
+		if err != nil {
+			log.Error().Msg("POST /teams/:teamid/scores")
+			return sc.handleErr(c, err)
+		}
 
 		return c.NoContent(http.StatusNoContent)
 	}

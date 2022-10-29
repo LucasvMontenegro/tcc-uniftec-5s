@@ -18,9 +18,11 @@ type TeamInterface interface {
 type TeamRepository interface {
 	Save(ctx context.Context, team *Team, edition *Edition) error
 	ListTeamsByEdition(ctx context.Context, edition *Edition) ([]*Team, error)
+	GetByID(ctx context.Context, team *Team) error
 }
 
 type TeamFactoryInterface interface {
 	NewTeam(ctx context.Context, name string, edition *Edition) TeamInterface
 	ListTeamsByEdition(ctx context.Context, edition *Edition) []TeamInterface
+	GetByID(ctx context.Context, id int64) (TeamInterface, error)
 }

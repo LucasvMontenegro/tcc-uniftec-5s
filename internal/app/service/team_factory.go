@@ -41,3 +41,18 @@ func (f teamFactory) ListTeamsByEdition(ctx context.Context, edition *entity.Edi
 
 	return teams
 }
+
+func (f teamFactory) GetByID(ctx context.Context, id int64) (entity.TeamInterface, error) {
+	entity := &entity.Team{
+		ID: &id,
+	}
+
+	if err := f.teamRepository.GetByID(ctx, entity); err != nil {
+		return nil, err
+	}
+
+	return teamImpl{
+		teamEntity:     entity,
+		teamRepository: f.teamRepository,
+	}, nil
+}

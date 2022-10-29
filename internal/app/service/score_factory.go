@@ -29,3 +29,16 @@ func (f scoreFactory) ListScores(ctx context.Context, teamID int64) ([]entity.Sc
 
 	return scores, nil
 }
+
+func (f scoreFactory) New(ctx context.Context, team *entity.Team, fives *entity.FiveS, score int) entity.ScoreInterface {
+	entity := &entity.Score{
+		FiveSID: fives.ID,
+		TeamID:  team.ID,
+		Score:   &score,
+	}
+
+	return scoreImpl{
+		scoreEntity:     entity,
+		scoreRepository: f.scoreRepository,
+	}
+}

@@ -54,6 +54,7 @@ func Init(rootdir string) {
 	prizeRepository := repository.NewPrize(pgService)
 	teamRepository := repository.NewTeam(pgService)
 	scoreRepository := repository.NewScore(pgService)
+	fiveSRepository := repository.NewFiveS(pgService)
 
 	jwtMaker, err := token.NewJWTMaker(environment.Env.JWTSigningKey)
 	if err != nil {
@@ -68,6 +69,7 @@ func Init(rootdir string) {
 	prizeFactory := service.NewPrizeFactory(prizeRepository)
 	teamFactory := service.NewTeamFactory(teamRepository)
 	scoreFactory := service.NewScoreFactory(scoreRepository)
+	fiveSFactory := service.NewFiveSFactory(fiveSRepository)
 
 	signupUseCase := usecase.NewSignup(txHandler, credentialFactory, accountFactory, userFactory)
 	loginUseCase := usecase.NewLogin(txHandler, credentialFactory, sessionFactory)
@@ -79,6 +81,7 @@ func Init(rootdir string) {
 	createTeamUseCase := usecase.NewCreateTeam(txHandler, teamFactory, editionFactory)
 	listTeamsUseCase := usecase.NewListTeams(teamFactory, editionFactory)
 	listScoresUseCase := usecase.NewListScores(scoreFactory)
+	scoreUseCase := usecase.NewScore(scoreFactory, fiveSFactory, teamFactory)
 
 	httpServer := server.New(
 		fmt.Sprintf(":%s", environment.Env.HttpPort),
@@ -95,7 +98,7 @@ func Init(rootdir string) {
 		controller.NewEdition(httpServer.Instance, httpServer.Restricted, accessValidator, createEditionUseCase, listEditionsUseCase),
 		controller.NewUser(httpServer.Instance, listTeamlessUsersUseCase, listUsersUseCase),
 		controller.NewTeam(httpServer.Instance, httpServer.Restricted, accessValidator, createTeamUseCase, listTeamsUseCase),
-		controller.NewScore(httpServer.Instance, httpServer.Restricted, accessValidator, listScoresUseCase),
+		controller.NewScore(httpServer.Instance, httpServer.Restricted, accessValidator, listScoresUseCase, scoreUseCase),
 	}
 
 	registerControllersRoutes(controllers)

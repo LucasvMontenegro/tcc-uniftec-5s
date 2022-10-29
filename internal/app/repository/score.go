@@ -42,7 +42,7 @@ func (r score) ListScores(ctx context.Context, teamID int64) ([]*entity.Score, e
 			FiveSID: score.FiveSID,
 			FiveS: &entity.FiveS{
 				ID:   score.FiveS.ID,
-				Name: *score.FiveS.Name,
+				Name: score.FiveS.Name,
 			},
 			TeamID: score.TeamID,
 			Team: &entity.Team{
@@ -56,4 +56,26 @@ func (r score) ListScores(ctx context.Context, teamID int64) ([]*entity.Score, e
 	}
 
 	return scores, err
+}
+
+func (r score) Save(ctx context.Context, score *entity.Score) error {
+	dbconn := r.db
+	ctxValue, ok := ctx.Value(CtxKey{}).(CtxValue)
+	if ok {
+		dbconn = ctxValue.tx
+	}
+
+	scoreDS := datastructure.Score{
+		TeamID:  score.TeamID,
+		FiveSID: score.FiveSID,
+		Score:   score.Score,
+	}
+
+	err := dbconn.
+		WithContext(ctx).
+		Table("scores").
+		Create(&scoreDS).
+		Error
+
+	return err
 }
