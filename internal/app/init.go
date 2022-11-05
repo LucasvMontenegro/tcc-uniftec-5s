@@ -99,6 +99,7 @@ func Init(rootdir string) {
 		controller.NewUser(httpServer.Instance, listTeamlessUsersUseCase, listUsersUseCase),
 		controller.NewTeam(httpServer.Instance, httpServer.Restricted, accessValidator, createTeamUseCase, listTeamsUseCase),
 		controller.NewScore(httpServer.Instance, httpServer.Restricted, accessValidator, listScoresUseCase, scoreUseCase),
+		controller.NewRanking(httpServer.Instance),
 	}
 
 	registerControllersRoutes(controllers)
