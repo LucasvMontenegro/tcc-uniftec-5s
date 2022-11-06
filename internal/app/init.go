@@ -70,6 +70,7 @@ func Init(rootdir string) {
 	teamFactory := service.NewTeamFactory(teamRepository)
 	scoreFactory := service.NewScoreFactory(scoreRepository)
 	fiveSFactory := service.NewFiveSFactory(fiveSRepository)
+	rankingFactory := service.NewRankingFactory(teamFactory, scoreFactory)
 
 	signupUseCase := usecase.NewSignup(txHandler, credentialFactory, accountFactory, userFactory)
 	loginUseCase := usecase.NewLogin(txHandler, credentialFactory, sessionFactory)
@@ -82,6 +83,7 @@ func Init(rootdir string) {
 	listTeamsUseCase := usecase.NewListTeams(teamFactory, editionFactory)
 	listScoresUseCase := usecase.NewListScores(scoreFactory)
 	scoreUseCase := usecase.NewScore(scoreFactory, fiveSFactory, teamFactory)
+	retrieveRankingUseCase := usecase.NewRetrieveRanking(rankingFactory, editionFactory)
 
 	httpServer := server.New(
 		fmt.Sprintf(":%s", environment.Env.HttpPort),
@@ -99,7 +101,7 @@ func Init(rootdir string) {
 		controller.NewUser(httpServer.Instance, listTeamlessUsersUseCase, listUsersUseCase),
 		controller.NewTeam(httpServer.Instance, httpServer.Restricted, accessValidator, createTeamUseCase, listTeamsUseCase),
 		controller.NewScore(httpServer.Instance, httpServer.Restricted, accessValidator, listScoresUseCase, scoreUseCase),
-		controller.NewRanking(httpServer.Instance),
+		controller.NewRanking(httpServer.Instance, retrieveRankingUseCase),
 		controller.NewReport(httpServer.Instance),
 	}
 

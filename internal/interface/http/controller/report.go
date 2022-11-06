@@ -62,15 +62,15 @@ func (tc report) retrieveReport() func(c echo.Context) error {
 		// response := response.NewCreatedReport(*report)
 		response := ReportResponse{
 			Name: "Edition Test",
-			Scores: ScoresResp{
-				TeamName: "Brasil",
-				Seiri:    "1",
-				Seiton:   "10",
-				Seiso:    "10",
-				Seiketsu: "10",
-				Shitsuke: "10",
-				Total:    "41",
-			},
+			// Scores: ScoresResp{
+			// 	TeamName: "Brasil",
+			// 	Seiri:    "1",
+			// 	Seiton:   "10",
+			// 	Seiso:    "10",
+			// 	Seiketsu: "10",
+			// 	Shitsuke: "10",
+			// 	Total:    "41",
+			// },
 		}
 
 		log.Info().Msg("retrieving report success")
@@ -79,6 +79,6 @@ func (tc report) retrieveReport() func(c echo.Context) error {
 }
 
 type ReportResponse struct {
-	Name   string     `json:"edition_name"`
-	Scores ScoresResp `json:"scores"`
+	Name string `json:"edition_name"`
+	// Scores ScoresResp `json:"scores"`
 }
